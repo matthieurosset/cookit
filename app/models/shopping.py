@@ -1,36 +1,15 @@
 import json
 
-from ..db import query, execute, get_db
+from ..db import query, execute
 
 
-def list_all():
-    lists = query('SELECT * FROM shopping_list ORDER BY created_at DESC')
-    result = []
-    for lst in lists:
-        total = query(
-            'SELECT COUNT(*) as c FROM shopping_item WHERE list_id = ?',
-            [lst['id']], one=True
-        )['c']
-        checked = query(
-            'SELECT COUNT(*) as c FROM shopping_item WHERE list_id = ? AND checked = 1',
-            [lst['id']], one=True
-        )['c']
-        result.append({**dict(lst), 'total': total, 'checked': checked})
-    return result
-
-
-def get(list_id):
-    return query('SELECT * FROM shopping_list WHERE id = ?', [list_id], one=True)
-
-
-def create(name):
-    return execute(
-        'INSERT INTO shopping_list (name) VALUES (?)', [name.strip()]
-    ).lastrowid
-
-
-def delete(list_id):
-    execute('DELETE FROM shopping_list WHERE id = ?', [list_id])
+def get_or_create_list():
+    """Get the single shopping list, creating it if needed."""
+    lst = query('SELECT * FROM shopping_list LIMIT 1', one=True)
+    if not lst:
+        execute("INSERT INTO shopping_list (name) VALUES ('courses')")
+        lst = query('SELECT * FROM shopping_list LIMIT 1', one=True)
+    return lst
 
 
 def get_items(list_id):
@@ -91,3 +70,52 @@ def clear_checked(list_id):
         'DELETE FROM shopping_item WHERE list_id = ? AND checked = 1',
         [list_id]
     )
+
+
+def clear_all(list_id):
+    execute('DELETE FROM shopping_item WHERE list_id = ?', [list_id])
+
+
+def get_suggestions(q):
+    """Return item suggestions matching query, sorted by frequency."""
+    rows = query(
+        '''SELECT name,
+                  quantity,
+                  unit,
+                  COUNT(*) as freq
+           FROM shopping_item
+           WHERE LOWER(name) LIKE ?
+           GROUP BY LOWER(name)
+           ORDER BY freq DESC
+           LIMIT 8''',
+        ['%' + q.lower() + '%']
+    )
+    seen = set()
+    results = []
+    for r in rows:
+        key = r['name'].lower()
+        if key not in seen:
+            seen.add(key)
+            results.append({
+                'name': r['name'],
+                'quantity': r['quantity'] or '',
+                'unit': r['unit'] or '',
+            })
+    return results
+
+
+def get_frequent_items(limit=10):
+    """Return the most frequently added items."""
+    rows = query(
+        '''SELECT name,
+                  quantity,
+                  unit,
+                  COUNT(*) as freq
+           FROM shopping_item
+           GROUP BY LOWER(name)
+           ORDER BY freq DESC
+           LIMIT ?''',
+        [limit]
+    )
+    return [{'name': r['name'], 'quantity': r['quantity'] or '',
+             'unit': r['unit'] or ''} for r in rows]

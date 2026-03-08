@@ -1,6 +1,4 @@
-import json
-
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 
 from ..models import shopping as shopping_model
 from ..models import recipe as recipe_model
@@ -10,31 +8,10 @@ bp = Blueprint('shopping', __name__)
 
 @bp.route('/courses')
 def index():
-    lists = shopping_model.list_all()
-    return render_template('shopping/lists.html', lists=lists)
-
-
-@bp.route('/courses/nouvelle', methods=['POST'])
-def create():
-    name = request.form.get('name', '').strip()
-    if name:
-        list_id = shopping_model.create(name)
-        return redirect(url_for('shopping.detail', list_id=list_id))
-    flash('Nom requis.', 'error')
-    return redirect(url_for('shopping.index'))
-
-
-@bp.route('/courses/<int:list_id>')
-def detail(list_id):
-    lst = shopping_model.get(list_id)
-    if not lst:
-        flash('Liste introuvable.', 'error')
-        return redirect(url_for('shopping.index'))
-
-    items = shopping_model.get_items(list_id)
+    lst = shopping_model.get_or_create_list()
+    items = shopping_model.get_items(lst['id'])
     recipes = recipe_model.list_all()
 
-    # Group items by recipe
     grouped = {}
     free_items = []
     for item in items:
@@ -46,35 +23,39 @@ def detail(list_id):
         else:
             free_items.append(item)
 
-    return render_template('shopping/detail.html', list=lst, items=items,
-                           grouped=grouped, free_items=free_items, recipes=recipes)
+    frequent = shopping_model.get_frequent_items(10)
+    return render_template('shopping/index.html', list=lst, items=items,
+                           grouped=grouped, free_items=free_items,
+                           recipes=recipes, frequent=frequent)
 
 
-@bp.route('/courses/<int:list_id>/ajouter', methods=['POST'])
-def add_item(list_id):
+@bp.route('/courses/ajouter', methods=['POST'])
+def add_item():
+    lst = shopping_model.get_or_create_list()
     name = request.form.get('name', '').strip()
     quantity = request.form.get('quantity', '').strip() or None
     unit = request.form.get('unit', '').strip() or None
 
     if name:
-        shopping_model.add_item(list_id, name, quantity, unit)
+        shopping_model.add_item(lst['id'], name, quantity, unit)
 
     if request.headers.get('HX-Request'):
-        return _render_items_partial(list_id)
-    return redirect(url_for('shopping.detail', list_id=list_id))
+        return _render_items_partial(lst['id'])
+    return redirect(url_for('shopping.index'))
 
 
-@bp.route('/courses/<int:list_id>/ajouter-recette', methods=['POST'])
-def add_recipe(list_id):
+@bp.route('/courses/ajouter-recette', methods=['POST'])
+def add_recipe():
+    lst = shopping_model.get_or_create_list()
     recipe_id = request.form.get('recipe_id', type=int)
     portions = request.form.get('portions', type=int)
 
     if recipe_id:
-        shopping_model.add_recipe_items(list_id, recipe_id, portions)
+        shopping_model.add_recipe_items(lst['id'], recipe_id, portions)
 
     if request.headers.get('HX-Request'):
-        return _render_items_partial(list_id)
-    return redirect(url_for('shopping.detail', list_id=list_id))
+        return _render_items_partial(lst['id'])
+    return redirect(url_for('shopping.index'))
 
 
 @bp.route('/courses/item/<int:item_id>/toggle', methods=['PATCH'])
@@ -100,19 +81,31 @@ def delete_item(item_id):
     return '', 204
 
 
-@bp.route('/courses/<int:list_id>/vider-coches', methods=['POST'])
-def clear_checked(list_id):
-    shopping_model.clear_checked(list_id)
+@bp.route('/courses/vider-coches', methods=['POST'])
+def clear_checked():
+    lst = shopping_model.get_or_create_list()
+    shopping_model.clear_checked(lst['id'])
     if request.headers.get('HX-Request'):
-        return _render_items_partial(list_id)
-    return redirect(url_for('shopping.detail', list_id=list_id))
-
-
-@bp.route('/courses/<int:list_id>/supprimer', methods=['POST'])
-def delete_list(list_id):
-    shopping_model.delete(list_id)
-    flash('Liste supprimée.', 'success')
+        return _render_items_partial(lst['id'])
     return redirect(url_for('shopping.index'))
+
+
+@bp.route('/courses/vider', methods=['POST'])
+def clear_all():
+    lst = shopping_model.get_or_create_list()
+    shopping_model.clear_all(lst['id'])
+    if request.headers.get('HX-Request'):
+        return _render_items_partial(lst['id'])
+    return redirect(url_for('shopping.index'))
+
+
+@bp.route('/courses/suggestions')
+def suggestions():
+    q = request.args.get('q', '').strip()
+    if len(q) < 2:
+        return jsonify([])
+    results = shopping_model.get_suggestions(q)
+    return jsonify(results)
 
 
 def _render_items_partial(list_id):
@@ -128,4 +121,4 @@ def _render_items_partial(list_id):
         else:
             free_items.append(item)
     return render_template('shopping/partials/items.html',
-                           list_id=list_id, grouped=grouped, free_items=free_items)
+                           grouped=grouped, free_items=free_items)

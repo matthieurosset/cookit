@@ -373,8 +373,8 @@ h3 { font-size: 1.2rem; }
 
 .tag-pill:hover,
 .tag-pill.active {
-    border-color: var(--tag-color, var(--color-terracotta));
-    background: var(--tag-color, var(--color-terracotta));
+    border-color: var(--color-terracotta);
+    background: var(--color-terracotta);
     color: white;
 }
 
@@ -557,7 +557,7 @@ h3 { font-size: 1.2rem; }
     display: inline-block;
     padding: 0.2rem 0.7rem;
     border-radius: var(--radius-full);
-    background: var(--tag-color, var(--color-brown-lighter));
+    background: var(--color-brown-lighter);
     color: white;
     font-size: 0.8rem;
     font-weight: 500;
@@ -952,8 +952,8 @@ input[type="file"] {
 }
 
 .tag-checkbox:has(input:checked) {
-    background: var(--tag-color, var(--color-brown-lighter));
-    border-color: var(--tag-color, var(--color-brown-lighter));
+    background: var(--color-brown-lighter);
+    border-color: var(--color-brown-lighter);
     color: white;
 }
 
@@ -974,56 +974,7 @@ input[type="file"] {
     max-width: 500px;
 }
 
-/* --- Shopping Lists --- */
-.shopping-lists {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-lg);
-    margin-top: var(--space-lg);
-}
-
-.shopping-list-card {
-    background: var(--color-warm-white);
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition);
-    display: block;
-    color: inherit;
-}
-
-.shopping-list-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    color: inherit;
-}
-
-.shopping-list-card h3 {
-    margin-bottom: var(--space-sm);
-}
-
-.list-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--color-text-lighter);
-    margin-bottom: var(--space-sm);
-}
-
-.list-progress {
-    height: 4px;
-    background: var(--color-border);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.list-progress-bar {
-    height: 100%;
-    background: var(--color-sage);
-    border-radius: 2px;
-    transition: width var(--transition);
-}
-
+/* --- Shopping --- */
 .shopping-group {
     margin-bottom: var(--space-lg);
 }
@@ -1121,6 +1072,82 @@ input[type="file"] {
 .back-link {
     margin-top: var(--space-xl);
     display: inline-flex;
+}
+
+/* --- Autocomplete --- */
+.autocomplete-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.autocomplete-wrapper .input-grow {
+    width: 100%;
+}
+
+.autocomplete-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-warm-white);
+    border: 1px solid var(--color-border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 50;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.autocomplete-dropdown.show {
+    display: block;
+}
+
+.autocomplete-item {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background: var(--color-cream);
+}
+
+.ac-meta {
+    font-size: 0.78rem;
+    color: var(--color-text-lighter);
+}
+
+/* --- Frequent Items --- */
+.frequent-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.frequent-btn {
+    padding: 0.25rem 0.7rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: var(--color-warm-white);
+    color: var(--color-text);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.frequent-btn:hover {
+    border-color: var(--color-terracotta);
+    background: rgba(196, 114, 78, 0.1);
+    color: var(--color-terracotta);
 }
 
 /* --- Tags Management --- */

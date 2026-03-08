@@ -58,6 +58,111 @@ function toggleCookMode() {
 // Initialize step numbers on page load
 document.addEventListener('DOMContentLoaded', updateStepNumbers);
 
+// --- Shopping autocomplete & frequent items ---
+(function() {
+    let debounceTimer;
+    let activeIndex = -1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const nameInput = document.getElementById('input-name');
+        if (!nameInput) return;
+
+        const dropdown = document.getElementById('autocomplete-dropdown');
+        const qtyInput = document.getElementById('input-qty');
+        const unitInput = document.getElementById('input-unit');
+        const form = document.getElementById('add-item-form');
+
+        // Autocomplete on typing
+        nameInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const q = nameInput.value.trim();
+            if (q.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+            debounceTimer = setTimeout(() => {
+                fetch('/courses/suggestions?q=' + encodeURIComponent(q))
+                    .then(r => r.json())
+                    .then(items => {
+                        if (!items.length) {
+                            dropdown.classList.remove('show');
+                            return;
+                        }
+                        activeIndex = -1;
+                        dropdown.innerHTML = items.map((item, i) =>
+                            `<div class="autocomplete-item" data-index="${i}"
+                                  data-name="${item.name}"
+                                  data-quantity="${item.quantity}"
+                                  data-unit="${item.unit}">
+                                <span class="ac-name">${item.name}</span>
+                                ${item.quantity || item.unit ?
+                                    `<span class="ac-meta">${item.quantity} ${item.unit}</span>` : ''}
+                            </div>`
+                        ).join('');
+                        dropdown.classList.add('show');
+                    });
+            }, 200);
+        });
+
+        // Click suggestion
+        dropdown.addEventListener('mousedown', (e) => {
+            const item = e.target.closest('.autocomplete-item');
+            if (!item) return;
+            e.preventDefault();
+            selectSuggestion(item, nameInput, qtyInput, unitInput, dropdown);
+        });
+
+        // Keyboard navigation
+        nameInput.addEventListener('keydown', (e) => {
+            if (!dropdown.classList.contains('show')) return;
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIndex = Math.min(activeIndex + 1, items.length - 1);
+                updateActive(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIndex = Math.max(activeIndex - 1, -1);
+                updateActive(items);
+            } else if (e.key === 'Enter' && activeIndex >= 0) {
+                e.preventDefault();
+                selectSuggestion(items[activeIndex], nameInput, qtyInput, unitInput, dropdown);
+            } else if (e.key === 'Escape') {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close on blur
+        nameInput.addEventListener('blur', () => {
+            setTimeout(() => dropdown.classList.remove('show'), 150);
+        });
+
+        // Frequent item buttons
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.frequent-btn');
+            if (!btn) return;
+            nameInput.value = btn.dataset.name;
+            qtyInput.value = btn.dataset.quantity;
+            unitInput.value = btn.dataset.unit;
+            htmx.trigger(form, 'submit');
+        });
+    });
+
+    function selectSuggestion(item, nameInput, qtyInput, unitInput, dropdown) {
+        nameInput.value = item.dataset.name;
+        if (item.dataset.quantity) qtyInput.value = item.dataset.quantity;
+        if (item.dataset.unit) unitInput.value = item.dataset.unit;
+        dropdown.classList.remove('show');
+        nameInput.focus();
+    }
+
+    function updateActive(items) {
+        items.forEach((el, i) => {
+            el.classList.toggle('active', i === activeIndex);
+        });
+    }
+})();
+
 // Auto-dismiss flash messages
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.flash').forEach(el => {
