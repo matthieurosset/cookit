@@ -1,0 +1,6 @@
+<button class="btn-fav {% if is_favorite %}active{% endif %}"
+        hx-post="{{ url_for('recipes.toggle_favorite', recipe_id=recipe_id) }}"
+        hx-swap="outerHTML"
+        title="{{ 'Retirer des favoris' if is_favorite else 'Ajouter aux favoris' }}">
+    <span class="heart-icon">&#9829;</span>
+</button>

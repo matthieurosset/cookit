@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ recipe.title }} - Cookit{% endblock %}
+
+{% block content %}
+<article class="recipe-detail" id="recipe-detail">
+    <div class="recipe-header">
+        <div class="recipe-header-text">
+            <div class="recipe-title-row">
+                <h1>{{ recipe.title }}</h1>
+                {% set recipe_id = recipe.id %}
+                {% set is_favorite = recipe.is_favorite %}
+                {% include "recipes/partials/favorite_btn.html" %}
+            </div>
+            {% if recipe.description %}
+            <p class="recipe-description">{{ recipe.description }}</p>
+            {% endif %}
+            <div class="recipe-meta">
+                {% if recipe.prep_time %}
+                <span class="meta-item">&#9202; Prep: {{ recipe.prep_time }} min</span>
+                {% endif %}
+                {% if recipe.cook_time %}
+                <span class="meta-item">&#128293; Cuisson: {{ recipe.cook_time }} min</span>
+                {% endif %}
+                {% if recipe.prep_time and recipe.cook_time %}
+                <span class="meta-item meta-total">&#8721; Total: {{ recipe.prep_time + recipe.cook_time }} min</span>
+                {% endif %}
+            </div>
+            {% if tags %}
+            <div class="recipe-tags">
+                {% for tag in tags %}
+                <a href="{{ url_for('recipes.index', tag=tag.id) }}" class="tag-badge" style="--tag-color: {{ tag.color }}">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% if recipe.image_path %}
+        <div class="recipe-hero-image">
+            <img src="{{ url_for('recipes.uploaded_file', filename=recipe.image_path) }}"
+                 alt="{{ recipe.title }}">
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="recipe-content">
+        <aside class="recipe-sidebar">
+            <h2>Ingredients</h2>
+            {% set recipe_id = recipe.id %}
+            {% include "recipes/partials/ingredients.html" %}
+        </aside>
+
+        <section class="recipe-steps">
+            <h2>Preparation</h2>
+            <ol class="steps-list">
+                {% for step in steps %}
+                <li class="step-item">
+                    <span class="step-number">{{ loop.index }}</span>
+                    <p>{{ step }}</p>
+                </li>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+
+    {% if recipe.source_url %}
+    <div class="recipe-source">
+        <a href="{{ recipe.source_url }}" target="_blank" rel="noopener">Voir la recette originale &#8599;</a>
+    </div>
+    {% endif %}
+
+    <div class="recipe-actions">
+        <a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}" class="btn btn-secondary">Modifier</a>
+        <form method="POST" action="{{ url_for('recipes.delete', recipe_id=recipe.id) }}"
+              onsubmit="return confirm('Supprimer cette recette ?')">
+            <button type="submit" class="btn btn-danger">Supprimer</button>
+        </form>
+    </div>
+
+    <button class="btn btn-cook-mode" onclick="toggleCookMode()">
+        &#129379; Mode cuisine
+    </button>
+</article>
+{% endblock %}

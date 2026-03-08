@@ -1,0 +1,59 @@
+{% if free_items %}
+<div class="shopping-group">
+    <h3 class="shopping-group-title">Articles libres</h3>
+    {% for item in free_items %}
+    <div class="shopping-item {% if item.checked %}checked{% endif %}">
+        <label class="shopping-checkbox"
+               hx-patch="{{ url_for('shopping.toggle_item', item_id=item.id) }}"
+               hx-target="#shopping-items"
+               hx-swap="innerHTML">
+            <input type="checkbox" {% if item.checked %}checked{% endif %}>
+            <span class="checkmark"></span>
+            <span class="item-text">
+                {% if item.quantity %}<strong>{{ item.quantity }}</strong>{% endif %}
+                {% if item.unit %}{{ item.unit }}{% endif %}
+                {{ item.name }}
+            </span>
+        </label>
+        <button class="btn btn-icon btn-remove"
+                hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
+                hx-target="#shopping-items"
+                hx-swap="innerHTML"
+                title="Supprimer">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% for recipe_id, group in grouped.items() %}
+<div class="shopping-group">
+    <h3 class="shopping-group-title">{{ group.title }}</h3>
+    {% for item in group.entries %}
+    <div class="shopping-item {% if item.checked %}checked{% endif %}">
+        <label class="shopping-checkbox"
+               hx-patch="{{ url_for('shopping.toggle_item', item_id=item.id) }}"
+               hx-target="#shopping-items"
+               hx-swap="innerHTML">
+            <input type="checkbox" {% if item.checked %}checked{% endif %}>
+            <span class="checkmark"></span>
+            <span class="item-text">
+                {% if item.quantity %}<strong>{{ item.quantity }}</strong>{% endif %}
+                {% if item.unit %}{{ item.unit }}{% endif %}
+                {{ item.name }}
+            </span>
+        </label>
+        <button class="btn btn-icon btn-remove"
+                hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
+                hx-target="#shopping-items"
+                hx-swap="innerHTML"
+                title="Supprimer">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% if not free_items and not grouped %}
+<div class="empty-state">
+    <p>Liste vide. Ajoutez des articles ci-dessus.</p>
+</div>
+{% endif %}

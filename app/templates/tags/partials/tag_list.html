@@ -1,0 +1,26 @@
+{% if tags %}
+<div class="tag-manage-list">
+    {% for tag in tags %}
+    <div class="tag-manage-item">
+        <span class="tag-badge" style="--tag-color: {{ tag.color }}">{{ tag.name }}</span>
+        <span class="tag-count">{{ tag.recipe_count }} recette{{ 's' if tag.recipe_count != 1 }}</span>
+        <form class="tag-edit-form" method="POST" action="{{ url_for('tags.edit', tag_id=tag.id) }}">
+            <input type="text" name="name" value="{{ tag.name }}" class="input-sm">
+            <input type="color" name="color" value="{{ tag.color }}" class="input-color">
+            <button type="submit" class="btn btn-sm">&#10003;</button>
+        </form>
+        <form method="POST"
+              hx-post="{{ url_for('tags.delete', tag_id=tag.id) }}"
+              hx-target="#tag-list"
+              hx-swap="innerHTML"
+              hx-confirm="Supprimer ce tag ?">
+            <button type="submit" class="btn btn-icon btn-remove" title="Supprimer">&times;</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>Aucun tag. Creez-en un ci-dessus.</p>
+</div>
+{% endif %}

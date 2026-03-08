@@ -1,0 +1,12 @@
+{% if recipes %}
+<div class="recipe-grid">
+    {% for recipe in recipes %}
+    {% include "recipes/partials/card.html" %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>Aucune recette trouvee.</p>
+    <a href="{{ url_for('recipes.create') }}" class="btn btn-primary">Ajouter une recette</a>
+</div>
+{% endif %}

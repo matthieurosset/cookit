@@ -1,0 +1,29 @@
+<div class="ingredients-list" id="ingredients-list">
+    <div class="portions-control">
+        <button class="btn btn-sm"
+                hx-get="{{ url_for('recipes.scaled_ingredients', recipe_id=recipe_id, portions=portions - 1) }}"
+                hx-target="#ingredients-list"
+                hx-swap="outerHTML"
+                {% if portions <= 1 %}disabled{% endif %}>-</button>
+        <span class="portions-display">{{ portions }} portion{{ 's' if portions > 1 }}</span>
+        <button class="btn btn-sm"
+                hx-get="{{ url_for('recipes.scaled_ingredients', recipe_id=recipe_id, portions=portions + 1) }}"
+                hx-target="#ingredients-list"
+                hx-swap="outerHTML">+</button>
+    </div>
+    <ul class="ingredient-checklist">
+        {% for ing in ingredients %}
+        <li class="ingredient-item">
+            <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-check">
+                <span class="checkmark"></span>
+                <span class="ingredient-text">
+                    {% if ing.quantity %}<strong>{{ ing.quantity }}</strong>{% endif %}
+                    {% if ing.unit %}{{ ing.unit }}{% endif %}
+                    {{ ing.name }}
+                </span>
+            </label>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

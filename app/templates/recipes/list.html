@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Recettes - Cookit{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Mes recettes</h1>
+    <div class="page-actions">
+        <a href="{{ url_for('import_url.import_recipe') }}" class="btn btn-secondary">Importer</a>
+        <a href="{{ url_for('recipes.create') }}" class="btn btn-primary">+ Nouvelle recette</a>
+    </div>
+</div>
+
+<div class="search-bar">
+    <input type="search" name="q" placeholder="Rechercher une recette..."
+           value="{{ search }}"
+           hx-get="{{ url_for('recipes.index') }}"
+           hx-trigger="input changed delay:300ms, search"
+           hx-target="#recipe-cards"
+           hx-include="[name='tag'], [name='favoris']"
+           hx-push-url="true"
+           class="search-input"
+           autocomplete="off">
+</div>
+
+<div class="filter-bar">
+    <div class="tag-filters">
+        <label class="tag-pill {% if not active_tag %}active{% endif %}">
+            <input type="radio" name="tag" value=""
+                   {% if not active_tag %}checked{% endif %}
+                   hx-get="{{ url_for('recipes.index') }}"
+                   hx-trigger="change"
+                   hx-target="#recipe-cards"
+                   hx-include="[name='q'], [name='favoris']">
+            Toutes
+        </label>
+        {% for tag in tags %}
+        <label class="tag-pill {% if active_tag == tag.id %}active{% endif %}" style="--tag-color: {{ tag.color }}">
+            <input type="radio" name="tag" value="{{ tag.id }}"
+                   {% if active_tag == tag.id %}checked{% endif %}
+                   hx-get="{{ url_for('recipes.index') }}"
+                   hx-trigger="change"
+                   hx-target="#recipe-cards"
+                   hx-include="[name='q'], [name='favoris']">
+            {{ tag.name }}
+        </label>
+        {% endfor %}
+    </div>
+
+    <label class="favorites-toggle">
+        <input type="checkbox" name="favoris" value="1"
+               {% if favorites %}checked{% endif %}
+               hx-get="{{ url_for('recipes.index') }}"
+               hx-trigger="change"
+               hx-target="#recipe-cards"
+               hx-include="[name='q'], [name='tag']">
+        <span class="heart-icon">&#9829;</span> Favoris
+    </label>
+</div>
+
+<div id="recipe-cards">
+    {% include "recipes/partials/cards.html" %}
+</div>
+
+<div class="random-section">
+    <a href="{{ url_for('recipes.random_recipe') }}" class="btn btn-secondary btn-random">
+        &#127922; Recette au hasard
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+services:
+  cookit:
+    image: ghcr.io/mrosset/cookit:latest
+    container_name: cookit
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - /volume3/docker/cookit/data:/data
+    environment:
+      - PUID=1038
+      - PGID=65536
+      - UMASK=022
+      - SECRET_KEY=change-me-in-production
+      - COOKIT_DATA_DIR=/data

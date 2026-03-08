@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Listes de courses - Cookit{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Listes de courses</h1>
+</div>
+
+<form method="POST" action="{{ url_for('shopping.create') }}" class="inline-form">
+    <input type="text" name="name" placeholder="Nouvelle liste..." required class="input-grow">
+    <button type="submit" class="btn btn-primary">Creer</button>
+</form>
+
+{% if lists %}
+<div class="shopping-lists">
+    {% for list in lists %}
+    <a href="{{ url_for('shopping.detail', list_id=list.id) }}" class="shopping-list-card">
+        <h3>{{ list.name }}</h3>
+        <div class="list-meta">
+            <span>{{ list.checked }}/{{ list.total }} articles coches</span>
+            <span class="list-date">{{ list.created_at[:10] }}</span>
+        </div>
+        {% if list.total > 0 %}
+        <div class="list-progress">
+            <div class="list-progress-bar" style="width: {{ (list.checked / list.total * 100) | int }}%"></div>
+        </div>
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>Aucune liste de courses.</p>
+</div>
+{% endif %}
+{% endblock %}

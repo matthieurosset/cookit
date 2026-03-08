@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Modifier' if recipe else 'Nouvelle recette' }} - Cookit{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h1>{{ 'Modifier la recette' if recipe else 'Nouvelle recette' }}</h1>
+
+    <form method="POST" enctype="multipart/form-data" class="recipe-form"
+          action="{% if recipe %}{{ url_for('recipes.edit', recipe_id=recipe.id) }}{% else %}{{ url_for('recipes.create') }}{% endif %}">
+
+        <div class="form-group">
+            <label for="title">Titre *</label>
+            <input type="text" id="title" name="title" required
+                   value="{{ prefill.title if prefill else (recipe.title if recipe else '') }}">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="2">{{ prefill.description if prefill else (recipe.description if recipe else '') }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="portions">Portions</label>
+                <input type="number" id="portions" name="portions" min="1" max="99"
+                       value="{{ prefill.portions if prefill else (recipe.portions if recipe else 4) }}">
+            </div>
+            <div class="form-group">
+                <label for="prep_time">Prep (min)</label>
+                <input type="number" id="prep_time" name="prep_time" min="0"
+                       value="{{ prefill.prep_time if prefill and prefill.prep_time else (recipe.prep_time if recipe and recipe.prep_time else '') }}">
+            </div>
+            <div class="form-group">
+                <label for="cook_time">Cuisson (min)</label>
+                <input type="number" id="cook_time" name="cook_time" min="0"
+                       value="{{ prefill.cook_time if prefill and prefill.cook_time else (recipe.cook_time if recipe and recipe.cook_time else '') }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Photo</label>
+            {% if recipe and recipe.image_path %}
+            <div class="current-image">
+                <img src="{{ url_for('recipes.uploaded_file', filename='thumbs/' + recipe.image_path) }}"
+                     alt="Photo actuelle">
+                <span class="current-image-label">Photo actuelle - choisir un fichier pour remplacer</span>
+            </div>
+            {% endif %}
+            {% if prefill and prefill.image_path %}
+            <input type="hidden" name="imported_image" value="{{ prefill.image_path }}">
+            <div class="current-image">
+                <img src="{{ url_for('recipes.uploaded_file', filename='thumbs/' + prefill.image_path) }}"
+                     alt="Photo importee">
+                <span class="current-image-label">Photo importee</span>
+            </div>
+            {% endif %}
+            <input type="file" id="image" name="image" accept="image/*">
+        </div>
+
+        <fieldset class="form-group">
+            <legend>Ingredients *</legend>
+            <div id="ingredients-container">
+                {% if prefill and prefill.ingredients %}
+                    {% for ing in prefill.ingredients %}
+                    <div class="ingredient-row">
+                        <input type="text" name="ing_qty" placeholder="Qte" value="{{ ing.quantity }}" class="input-sm">
+                        <input type="text" name="ing_unit" placeholder="Unite" value="{{ ing.unit }}" class="input-sm">
+                        <input type="text" name="ing_name" placeholder="Ingredient" value="{{ ing.name }}" required class="input-grow">
+                        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+                    </div>
+                    {% endfor %}
+                {% elif edit_data is defined and edit_data %}
+                    {% for ing in edit_data.ingredients %}
+                    <div class="ingredient-row">
+                        <input type="text" name="ing_qty" placeholder="Qte" value="{{ ing.quantity }}" class="input-sm">
+                        <input type="text" name="ing_unit" placeholder="Unite" value="{{ ing.unit }}" class="input-sm">
+                        <input type="text" name="ing_name" placeholder="Ingredient" value="{{ ing.name }}" required class="input-grow">
+                        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="ingredient-row">
+                        <input type="text" name="ing_qty" placeholder="Qte" class="input-sm">
+                        <input type="text" name="ing_unit" placeholder="Unite" class="input-sm">
+                        <input type="text" name="ing_name" placeholder="Ingredient" required class="input-grow">
+                        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+                    </div>
+                {% endif %}
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addIngredientRow()">+ Ingredient</button>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <legend>Etapes *</legend>
+            <div id="steps-container">
+                {% if prefill and prefill.steps %}
+                    {% for step in prefill.steps %}
+                    <div class="step-row">
+                        <span class="step-row-number"></span>
+                        <textarea name="step" rows="2" required>{{ step }}</textarea>
+                        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+                    </div>
+                    {% endfor %}
+                {% elif edit_data is defined and edit_data %}
+                    {% for step in edit_data.steps %}
+                    <div class="step-row">
+                        <span class="step-row-number"></span>
+                        <textarea name="step" rows="2" required>{{ step }}</textarea>
+                        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="step-row">
+                        <span class="step-row-number"></span>
+                        <textarea name="step" rows="2" required></textarea>
+                        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+                    </div>
+                {% endif %}
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addStepRow()">+ Etape</button>
+        </fieldset>
+
+        {% if tags %}
+        <fieldset class="form-group">
+            <legend>Tags</legend>
+            <div class="tag-checkboxes">
+                {% for tag in tags %}
+                <label class="tag-checkbox" style="--tag-color: {{ tag.color }}">
+                    <input type="checkbox" name="tags" value="{{ tag.id }}"
+                           {% if tag.id in recipe_tags %}checked{% endif %}>
+                    {{ tag.name }}
+                </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="source_url">URL source</label>
+            <input type="url" id="source_url" name="source_url"
+                   value="{{ prefill.source_url if prefill else (recipe.source_url if recipe and recipe.source_url else '') }}">
+        </div>
+
+        {% if prefill and prefill.image_path %}
+        <input type="hidden" name="prefill_image" value="{{ prefill.image_path }}">
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {{ 'Enregistrer' if recipe else 'Creer la recette' }}
+            </button>
+            <a href="{% if recipe %}{{ url_for('recipes.detail', recipe_id=recipe.id) }}{% else %}{{ url_for('recipes.index') }}{% endif %}"
+               class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+<a href="{{ url_for('recipes.detail', recipe_id=recipe.id) }}" class="recipe-card">
+    <div class="card-image">
+        {% if recipe.image_path %}
+        <img src="{{ url_for('recipes.uploaded_file', filename='thumbs/' + recipe.image_path) }}"
+             alt="{{ recipe.title }}" loading="lazy">
+        {% else %}
+        <div class="card-image-placeholder">&#127860;</div>
+        {% endif %}
+        {% if recipe.is_favorite %}
+        <span class="card-fav">&#9829;</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <h3 class="card-title">{{ recipe.title }}</h3>
+        {% if recipe.prep_time or recipe.cook_time %}
+        <div class="card-meta">
+            {% if recipe.prep_time %}<span>{{ recipe.prep_time }} min prep</span>{% endif %}
+            {% if recipe.cook_time %}<span>{{ recipe.cook_time }} min cuisson</span>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</a>
