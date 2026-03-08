@@ -23,9 +23,12 @@ Quand l'utilisateur dit "publie" (ou "deploy", "mets en prod", etc.), exécuter 
    TOKEN=$(git credential fill <<< $'host=github.com\nprotocol=https' 2>/dev/null | grep password | cut -d= -f2)
    curl -s -H "Authorization: Bearer $TOKEN" "https://api.github.com/repos/matthieurosset/cookit/actions/runs?per_page=1"
    ```
-5. **Redéployer sur Portainer** via MCP : pull la nouvelle image puis recréer le container
-   - Stack ID : **52**
-   - Mettre à jour le stack avec `mcp__portainer__updateStack` (stackId: 52) en utilisant le même compose :
+5. **Pull la nouvelle image** via MCP :
+   ```
+   mcp__portainer__dockerProxy POST /images/create?fromImage=ghcr.io/matthieurosset/cookit&tag=latest
+   ```
+6. **Redéployer sur Portainer** via MCP : mettre à jour le stack avec `mcp__portainer__updateStack` (stackId: 52).
+   Utiliser un label `cookit.deployed` avec le timestamp courant pour forcer la recréation du container :
    ```yaml
    services:
      cookit:
@@ -42,8 +45,10 @@ Quand l'utilisateur dit "publie" (ou "deploy", "mets en prod", etc.), exécuter 
          - UMASK=022
          - SECRET_KEY=cookit-prod-key-s3cur3
          - COOKIT_DATA_DIR=/data
+       labels:
+         - "cookit.deployed=<TIMESTAMP_ISO>"
    ```
-6. **Confirmer** que le container tourne : `mcp__portainer__dockerProxy GET /containers/cookit/json` → vérifier `State.Running: true`
+7. **Confirmer** que le container tourne : `mcp__portainer__dockerProxy GET /containers/cookit/json` → vérifier `State.Running: true`
 
 ## Infra
 
