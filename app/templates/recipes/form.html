@@ -50,54 +50,54 @@
             <input type="hidden" name="imported_image" value="{{ prefill.image_path }}">
             <div class="current-image">
                 <img src="{{ url_for('recipes.uploaded_file', filename='thumbs/' + prefill.image_path) }}"
-                     alt="Photo importee">
-                <span class="current-image-label">Photo importee</span>
+                     alt="Photo importée">
+                <span class="current-image-label">Photo importée</span>
             </div>
             {% endif %}
             <input type="file" id="image" name="image" accept="image/*">
         </div>
 
         <fieldset class="form-group">
-            <legend>Ingredients *</legend>
+            <legend>Ingrédients *</legend>
             <div id="ingredients-container">
                 {% if prefill and prefill.ingredients %}
                     {% for ing in prefill.ingredients %}
                     <div class="ingredient-row">
-                        <input type="text" name="ing_qty" placeholder="Qte" value="{{ ing.quantity }}" class="input-sm">
-                        <input type="text" name="ing_unit" placeholder="Unite" value="{{ ing.unit }}" class="input-sm">
-                        <input type="text" name="ing_name" placeholder="Ingredient" value="{{ ing.name }}" required class="input-grow">
+                        <input type="text" name="ing_qty" placeholder="Qté" value="{{ ing.quantity }}" class="input-sm">
+                        <input type="text" name="ing_unit" placeholder="Unité" value="{{ ing.unit }}" class="input-sm">
+                        <input type="text" name="ing_name" placeholder="Ingrédient" value="{{ ing.name }}" required class="input-grow">
                         <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
                     </div>
                     {% endfor %}
                 {% elif edit_data is defined and edit_data %}
                     {% for ing in edit_data.ingredients %}
                     <div class="ingredient-row">
-                        <input type="text" name="ing_qty" placeholder="Qte" value="{{ ing.quantity }}" class="input-sm">
-                        <input type="text" name="ing_unit" placeholder="Unite" value="{{ ing.unit }}" class="input-sm">
-                        <input type="text" name="ing_name" placeholder="Ingredient" value="{{ ing.name }}" required class="input-grow">
+                        <input type="text" name="ing_qty" placeholder="Qté" value="{{ ing.quantity }}" class="input-sm">
+                        <input type="text" name="ing_unit" placeholder="Unité" value="{{ ing.unit }}" class="input-sm">
+                        <input type="text" name="ing_name" placeholder="Ingrédient" value="{{ ing.name }}" required class="input-grow">
                         <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
                     </div>
                     {% endfor %}
                 {% else %}
                     <div class="ingredient-row">
-                        <input type="text" name="ing_qty" placeholder="Qte" class="input-sm">
-                        <input type="text" name="ing_unit" placeholder="Unite" class="input-sm">
-                        <input type="text" name="ing_name" placeholder="Ingredient" required class="input-grow">
+                        <input type="text" name="ing_qty" placeholder="Qté" class="input-sm">
+                        <input type="text" name="ing_unit" placeholder="Unité" class="input-sm">
+                        <input type="text" name="ing_name" placeholder="Ingrédient" required class="input-grow">
                         <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
                     </div>
                 {% endif %}
             </div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addIngredientRow()">+ Ingredient</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addIngredientRow()">+ Ingrédient</button>
         </fieldset>
 
         <fieldset class="form-group">
-            <legend>Etapes *</legend>
+            <legend>Étapes *</legend>
             <div id="steps-container">
                 {% if prefill and prefill.steps %}
                     {% for step in prefill.steps %}
                     <div class="step-row">
                         <span class="step-row-number"></span>
-                        <textarea name="step" rows="2" required>{{ step }}</textarea>
+                        <textarea name="step" rows="2">{{ step }}</textarea>
                         <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
                     </div>
                     {% endfor %}
@@ -105,19 +105,19 @@
                     {% for step in edit_data.steps %}
                     <div class="step-row">
                         <span class="step-row-number"></span>
-                        <textarea name="step" rows="2" required>{{ step }}</textarea>
+                        <textarea name="step" rows="2">{{ step }}</textarea>
                         <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
                     </div>
                     {% endfor %}
                 {% else %}
                     <div class="step-row">
                         <span class="step-row-number"></span>
-                        <textarea name="step" rows="2" required></textarea>
+                        <textarea name="step" rows="2"></textarea>
                         <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
                     </div>
                 {% endif %}
             </div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addStepRow()">+ Etape</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addStepRow()">+ Étape</button>
         </fieldset>
 
         {% if tags %}
@@ -147,7 +147,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                {{ 'Enregistrer' if recipe else 'Creer la recette' }}
+                {{ 'Enregistrer' if recipe else 'Créer la recette' }}
             </button>
             <a href="{% if recipe %}{{ url_for('recipes.detail', recipe_id=recipe.id) }}{% else %}{{ url_for('recipes.index') }}{% endif %}"
                class="btn btn-secondary">Annuler</a>

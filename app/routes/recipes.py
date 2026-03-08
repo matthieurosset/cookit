@@ -45,7 +45,7 @@ def create():
         if tag_ids:
             recipe_model.set_tags(recipe_id, tag_ids)
 
-        flash('Recette ajoutee !', 'success')
+        flash('Recette ajoutée !', 'success')
         return redirect(url_for('recipes.detail', recipe_id=recipe_id))
 
     tags = tag_model.list_all()
@@ -89,7 +89,7 @@ def edit(recipe_id):
         tag_ids = request.form.getlist('tags')
         recipe_model.set_tags(recipe_id, tag_ids)
 
-        flash('Recette mise a jour !', 'success')
+        flash('Recette mise à jour !', 'success')
         return redirect(url_for('recipes.detail', recipe_id=recipe_id))
 
     tags = tag_model.list_all()
@@ -108,7 +108,7 @@ def delete(recipe_id):
     if recipe:
         images.delete_image(recipe['image_path'])
         recipe_model.delete(recipe_id)
-        flash('Recette supprimee.', 'success')
+        flash('Recette supprimée.', 'success')
     return redirect(url_for('recipes.index'))
 
 

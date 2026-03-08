@@ -17,7 +17,7 @@ def test_create_recipe(client):
         'ing_name': ['pommes', 'sucre', 'pate feuilletee'],
         'ing_qty': ['4', '100', '1'],
         'ing_unit': ['', 'g', ''],
-        'step': ['Eplucher les pommes', 'Etaler la pate', 'Enfourner 40 min'],
+        'step': ['Éplucher les pommes', 'Étaler la pâte', 'Enfourner 40 min'],
     }, follow_redirects=True)
     assert resp.status_code == 200
     assert b'Tarte aux pommes' in resp.data
@@ -31,7 +31,7 @@ def test_create_and_view_recipe(client):
         'ing_name': ['lardons', 'oeufs'],
         'ing_qty': ['200', '3'],
         'ing_unit': ['g', ''],
-        'step': ['Melanger', 'Cuire'],
+        'step': ['Mélanger', 'Cuire'],
     })
     resp = client.get('/recettes/1')
     assert resp.status_code == 200
@@ -45,7 +45,7 @@ def test_toggle_favorite(client):
         'ing_name': ['farine'],
         'ing_qty': ['250'],
         'ing_unit': ['g'],
-        'step': ['Melanger'],
+        'step': ['Mélanger'],
     })
     resp = client.post('/recettes/1/favori', follow_redirects=True)
     assert resp.status_code == 200
@@ -90,7 +90,7 @@ def test_scaled_ingredients(client):
         'ing_name': ['farine'],
         'ing_qty': ['200'],
         'ing_unit': ['g'],
-        'step': ['Melanger'],
+        'step': ['Mélanger'],
     })
     resp = client.get('/recettes/1/ingredients?portions=8')
     assert resp.status_code == 200

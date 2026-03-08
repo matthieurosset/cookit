@@ -9,7 +9,7 @@
               hx-post="{{ url_for('shopping.clear_checked', list_id=list.id) }}"
               hx-target="#shopping-items"
               hx-swap="innerHTML">
-            <button type="submit" class="btn btn-secondary btn-sm">Vider les coches</button>
+            <button type="submit" class="btn btn-secondary btn-sm">Vider les cochés</button>
         </form>
         <form method="POST" action="{{ url_for('shopping.delete_list', list_id=list.id) }}"
               onsubmit="return confirm('Supprimer cette liste ?')">
@@ -24,8 +24,8 @@
       hx-target="#shopping-items"
       hx-swap="innerHTML"
       hx-on::after-request="this.reset()">
-    <input type="text" name="quantity" placeholder="Qte" class="input-xs">
-    <input type="text" name="unit" placeholder="Unite" class="input-xs">
+    <input type="text" name="quantity" placeholder="Qté" class="input-xs">
+    <input type="text" name="unit" placeholder="Unité" class="input-xs">
     <input type="text" name="name" placeholder="Article..." required class="input-grow">
     <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
 </form>

@@ -43,13 +43,13 @@
 
     <div class="recipe-content">
         <aside class="recipe-sidebar">
-            <h2>Ingredients</h2>
+            <h2>Ingrédients</h2>
             {% set recipe_id = recipe.id %}
             {% include "recipes/partials/ingredients.html" %}
         </aside>
 
         <section class="recipe-steps">
-            <h2>Preparation</h2>
+            <h2>Préparation</h2>
             <ol class="steps-list">
                 {% for step in steps %}
                 <li class="step-item">

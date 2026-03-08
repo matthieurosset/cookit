@@ -41,7 +41,7 @@ def detail(list_id):
         if item['recipe_id']:
             key = item['recipe_id']
             if key not in grouped:
-                grouped[key] = {'title': item['recipe_title'] or 'Recette supprimee', 'entries': []}
+                grouped[key] = {'title': item['recipe_title'] or 'Recette supprimée', 'entries': []}
             grouped[key]['entries'].append(item)
         else:
             free_items.append(item)
@@ -111,7 +111,7 @@ def clear_checked(list_id):
 @bp.route('/courses/<int:list_id>/supprimer', methods=['POST'])
 def delete_list(list_id):
     shopping_model.delete(list_id)
-    flash('Liste supprimee.', 'success')
+    flash('Liste supprimée.', 'success')
     return redirect(url_for('shopping.index'))
 
 
@@ -123,7 +123,7 @@ def _render_items_partial(list_id):
         if item['recipe_id']:
             key = item['recipe_id']
             if key not in grouped:
-                grouped[key] = {'title': item['recipe_title'] or 'Recette supprimee', 'entries': []}
+                grouped[key] = {'title': item['recipe_title'] or 'Recette supprimée', 'entries': []}
             grouped[key]['entries'].append(item)
         else:
             free_items.append(item)

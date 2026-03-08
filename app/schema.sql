@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS recipe (
     title TEXT NOT NULL,
     description TEXT DEFAULT '',
     ingredients TEXT NOT NULL DEFAULT '[]',
-    steps TEXT NOT NULL DEFAULT '[]',
+    steps TEXT DEFAULT '[]',
     portions INTEGER DEFAULT 4,
     prep_time INTEGER,
     cook_time INTEGER,

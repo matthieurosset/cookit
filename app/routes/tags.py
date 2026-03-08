@@ -21,7 +21,7 @@ def create():
     color = request.form.get('color', '#8B7355').strip()
     if name:
         tag_model.create(name, color)
-        flash('Tag cree !', 'success')
+        flash('Tag créé !', 'success')
     if request.headers.get('HX-Request'):
         tags = tag_model.list_all()
         tags_with_counts = []
@@ -38,14 +38,14 @@ def edit(tag_id):
     color = request.form.get('color', '#8B7355').strip()
     if name:
         tag_model.update(tag_id, name, color)
-        flash('Tag mis a jour !', 'success')
+        flash('Tag mis à jour !', 'success')
     return redirect(url_for('tags.index'))
 
 
 @bp.route('/tags/<int:tag_id>/supprimer', methods=['POST'])
 def delete(tag_id):
     tag_model.delete(tag_id)
-    flash('Tag supprime.', 'success')
+    flash('Tag supprimé.', 'success')
     if request.headers.get('HX-Request'):
         tags = tag_model.list_all()
         tags_with_counts = []
