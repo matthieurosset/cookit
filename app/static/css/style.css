@@ -1138,16 +1138,9 @@ input[type="file"] {
     border-radius: var(--radius-full);
     border: 1px solid var(--color-border);
     background: var(--color-warm-white);
-    color: var(--color-text);
+    color: var(--color-text-light);
     font-size: 0.82rem;
     cursor: pointer;
-    transition: all var(--transition);
-}
-
-.frequent-btn:hover {
-    border-color: var(--color-terracotta);
-    background: rgba(196, 114, 78, 0.1);
-    color: var(--color-terracotta);
 }
 
 /* --- Tags Management --- */
