@@ -125,7 +125,7 @@
             <legend>Tags</legend>
             <div class="tag-checkboxes">
                 {% for tag in tags %}
-                <label class="tag-checkbox" style="--tag-color: {{ tag.color }}">
+                <label class="tag-checkbox">
                     <input type="checkbox" name="tags" value="{{ tag.id }}"
                            {% if tag.id in recipe_tags %}checked{% endif %}>
                     {{ tag.name }}

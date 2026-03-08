@@ -9,17 +9,17 @@ def get(tag_id):
     return query('SELECT * FROM tag WHERE id = ?', [tag_id], one=True)
 
 
-def create(name, color='#8B7355'):
+def create(name):
     return execute(
-        'INSERT INTO tag (name, color) VALUES (?, ?)',
-        [name.strip(), color]
+        'INSERT INTO tag (name) VALUES (?)',
+        [name.strip()]
     ).lastrowid
 
 
-def update(tag_id, name, color):
+def update(tag_id, name):
     execute(
-        'UPDATE tag SET name = ?, color = ? WHERE id = ?',
-        [name.strip(), color, tag_id]
+        'UPDATE tag SET name = ? WHERE id = ?',
+        [name.strip(), tag_id]
     )
 
 

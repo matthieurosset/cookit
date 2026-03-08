@@ -34,7 +34,7 @@
             Toutes
         </label>
         {% for tag in tags %}
-        <label class="tag-pill {% if active_tag == tag.id %}active{% endif %}" style="--tag-color: {{ tag.color }}">
+        <label class="tag-pill {% if active_tag == tag.id %}active{% endif %}">
             <input type="radio" name="tag" value="{{ tag.id }}"
                    {% if active_tag == tag.id %}checked{% endif %}
                    hx-get="{{ url_for('recipes.index') }}"

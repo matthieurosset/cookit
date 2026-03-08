@@ -18,9 +18,8 @@ def index():
 @bp.route('/tags/nouveau', methods=['POST'])
 def create():
     name = request.form.get('name', '').strip()
-    color = request.form.get('color', '#8B7355').strip()
     if name:
-        tag_model.create(name, color)
+        tag_model.create(name)
         flash('Tag créé !', 'success')
     if request.headers.get('HX-Request'):
         tags = tag_model.list_all()
@@ -35,9 +34,8 @@ def create():
 @bp.route('/tags/<int:tag_id>/modifier', methods=['POST'])
 def edit(tag_id):
     name = request.form.get('name', '').strip()
-    color = request.form.get('color', '#8B7355').strip()
     if name:
-        tag_model.update(tag_id, name, color)
+        tag_model.update(tag_id, name)
         flash('Tag mis à jour !', 'success')
     return redirect(url_for('tags.index'))
 

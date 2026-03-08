@@ -28,7 +28,7 @@
             {% if tags %}
             <div class="recipe-tags">
                 {% for tag in tags %}
-                <a href="{{ url_for('recipes.index', tag=tag.id) }}" class="tag-badge" style="--tag-color: {{ tag.color }}">{{ tag.name }}</a>
+                <a href="{{ url_for('recipes.index', tag=tag.id) }}" class="tag-badge">{{ tag.name }}</a>
                 {% endfor %}
             </div>
             {% endif %}
