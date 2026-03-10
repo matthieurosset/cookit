@@ -24,7 +24,7 @@
 
 <div class="filter-bar">
     <div class="tag-filters">
-        <label class="tag-pill {% if not active_tag %}active{% endif %}">
+        <label class="tag-pill">
             <input type="radio" name="tag" value=""
                    {% if not active_tag %}checked{% endif %}
                    hx-get="{{ url_for('recipes.index') }}"
@@ -34,7 +34,7 @@
             Toutes
         </label>
         {% for tag in tags %}
-        <label class="tag-pill {% if active_tag == tag.id %}active{% endif %}">
+        <label class="tag-pill">
             <input type="radio" name="tag" value="{{ tag.id }}"
                    {% if active_tag == tag.id %}checked{% endif %}
                    hx-get="{{ url_for('recipes.index') }}"

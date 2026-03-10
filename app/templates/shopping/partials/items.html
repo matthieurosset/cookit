@@ -12,22 +12,6 @@
             {{ item.name }}
         </span>
     </label>
-    {% if not item.checked %}
-    <span class="qty-controls">
-        <button class="btn btn-icon btn-qty"
-                hx-patch="{{ url_for('shopping.update_quantity', item_id=item.id) }}"
-                hx-vals='{"delta": -1}'
-                hx-target="#shopping-items"
-                hx-swap="innerHTML"
-                title="Moins">&minus;</button>
-        <button class="btn btn-icon btn-qty"
-                hx-patch="{{ url_for('shopping.update_quantity', item_id=item.id) }}"
-                hx-vals='{"delta": 1}'
-                hx-target="#shopping-items"
-                hx-swap="innerHTML"
-                title="Plus">&plus;</button>
-    </span>
-    {% endif %}
     <button class="btn btn-icon btn-remove"
             hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
             hx-target="#shopping-items"

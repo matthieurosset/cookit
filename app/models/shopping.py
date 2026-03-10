@@ -24,11 +24,26 @@ def get_items(list_id):
 
 
 def add_item(list_id, name, quantity=None, unit=None, recipe_id=None):
-    return execute(
+    row_id = execute(
         '''INSERT INTO shopping_item (list_id, name, quantity, unit, recipe_id)
            VALUES (?, ?, ?, ?, ?)''',
         [list_id, name.strip(), quantity, unit, recipe_id]
     ).lastrowid
+    if recipe_id is None:
+        _audit_item(name.strip(), quantity, unit)
+    return row_id
+
+
+def _audit_item(name, quantity=None, unit=None):
+    execute(
+        '''INSERT INTO shopping_item_audit (name, quantity, unit, count)
+           VALUES (?, ?, ?, 1)
+           ON CONFLICT(name) DO UPDATE SET
+               quantity = excluded.quantity,
+               unit = excluded.unit,
+               count = count + 1''',
+        [name, quantity, unit]
+    )
 
 
 def add_recipe_items(list_id, recipe_id, portions=None):
@@ -101,41 +116,23 @@ def clear_all(list_id):
 def get_suggestions(q):
     """Return item suggestions matching query, sorted by frequency."""
     rows = query(
-        '''SELECT name,
-                  quantity,
-                  unit,
-                  COUNT(*) as freq
-           FROM shopping_item
+        '''SELECT name, quantity, unit, count
+           FROM shopping_item_audit
            WHERE LOWER(name) LIKE ?
-           GROUP BY LOWER(name)
-           ORDER BY freq DESC
+           ORDER BY count DESC
            LIMIT 8''',
         ['%' + q.lower() + '%']
     )
-    seen = set()
-    results = []
-    for r in rows:
-        key = r['name'].lower()
-        if key not in seen:
-            seen.add(key)
-            results.append({
-                'name': r['name'],
-                'quantity': r['quantity'] or '',
-                'unit': r['unit'] or '',
-            })
-    return results
+    return [{'name': r['name'], 'quantity': r['quantity'] or '',
+             'unit': r['unit'] or ''} for r in rows]
 
 
 def get_frequent_items(limit=10):
     """Return the most frequently added items."""
     rows = query(
-        '''SELECT name,
-                  quantity,
-                  unit,
-                  COUNT(*) as freq
-           FROM shopping_item
-           GROUP BY LOWER(name)
-           ORDER BY freq DESC
+        '''SELECT name, quantity, unit, count
+           FROM shopping_item_audit
+           ORDER BY count DESC
            LIMIT ?''',
         [limit]
     )

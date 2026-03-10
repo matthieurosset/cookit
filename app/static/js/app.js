@@ -58,6 +58,32 @@ function toggleCookMode() {
 // Initialize step numbers on page load
 document.addEventListener('DOMContentLoaded', updateStepNumbers);
 
+// --- Shopping quantity controls ---
+function adjustQty(delta) {
+    const input = document.getElementById('input-qty');
+    if (!input) return;
+    let val = parseFloat(input.value) || 0;
+    val = Math.max(1, val + delta);
+    input.value = Number.isInteger(val) ? val : val.toFixed(1);
+}
+
+// --- Recipe modal ---
+function openRecipeModal() {
+    document.getElementById('recipe-modal').classList.add('open');
+}
+
+function closeRecipeModal() {
+    const modal = document.getElementById('recipe-modal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    const form = modal.querySelector('form');
+    if (form) form.reset();
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeRecipeModal();
+});
+
 // --- Shopping autocomplete & frequent items ---
 (function() {
     let debounceTimer;
@@ -142,7 +168,7 @@ document.addEventListener('DOMContentLoaded', updateStepNumbers);
             const btn = e.target.closest('.frequent-btn');
             if (!btn) return;
             nameInput.value = btn.dataset.name;
-            qtyInput.value = btn.dataset.quantity;
+            qtyInput.value = btn.dataset.quantity || '1';
             unitInput.value = btn.dataset.unit;
             htmx.trigger(form, 'submit');
         });

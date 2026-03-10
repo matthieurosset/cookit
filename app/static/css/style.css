@@ -372,7 +372,7 @@ h3 { font-size: 1.2rem; }
 }
 
 .tag-pill:hover,
-.tag-pill.active {
+.tag-pill:has(input:checked) {
     border-color: var(--color-terracotta);
     background: var(--color-terracotta);
     color: white;
@@ -587,6 +587,11 @@ h3 { font-size: 1.2rem; }
     grid-template-columns: 1fr 2fr;
     gap: var(--space-2xl);
     margin-bottom: var(--space-xl);
+}
+
+.recipe-content--ingredients-only {
+    grid-template-columns: 1fr;
+    max-width: 500px;
 }
 
 .recipe-sidebar h2,
@@ -1047,10 +1052,22 @@ input[type="file"] {
     font-size: 0.8rem;
 }
 
-.qty-controls {
+.qty-input-controls {
     display: flex;
+    align-items: center;
     gap: 2px;
     flex-shrink: 0;
+}
+
+.qty-display {
+    width: 32px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text);
+    padding: 0;
 }
 
 .btn-qty {
@@ -1077,17 +1094,57 @@ input[type="file"] {
     opacity: 1;
 }
 
-.add-recipe-section {
-    margin-bottom: var(--space-lg);
+/* --- Modal --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(62, 46, 35, 0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
 }
 
-.add-recipe-section summary {
-    cursor: pointer;
-    margin-bottom: var(--space-sm);
+.modal-overlay.open {
+    display: flex;
 }
 
-.add-recipe-section .inline-form {
-    margin-top: var(--space-sm);
+.modal {
+    background: var(--color-warm-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 450px;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-body {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: flex-end;
+    padding-top: var(--space-sm);
 }
 
 .back-link {
@@ -1294,6 +1351,10 @@ input[type="file"] {
 
     .recipe-content {
         grid-template-columns: 1fr;
+    }
+
+    .recipe-content--ingredients-only {
+        max-width: none;
     }
 
     .card-image {

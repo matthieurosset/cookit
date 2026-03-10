@@ -41,13 +41,14 @@
         {% endif %}
     </div>
 
-    <div class="recipe-content">
+    <div class="recipe-content {% if not steps %}recipe-content--ingredients-only{% endif %}">
         <aside class="recipe-sidebar">
             <h2>Ingrédients</h2>
             {% set recipe_id = recipe.id %}
             {% include "recipes/partials/ingredients.html" %}
         </aside>
 
+        {% if steps %}
         <section class="recipe-steps">
             <h2>Préparation</h2>
             <ol class="steps-list">
@@ -59,6 +60,7 @@
                 {% endfor %}
             </ol>
         </section>
+        {% endif %}
     </div>
 
     {% if recipe.source_url %}

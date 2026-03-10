@@ -44,3 +44,12 @@ CREATE TABLE IF NOT EXISTS shopping_item (
     FOREIGN KEY (list_id) REFERENCES shopping_list(id) ON DELETE CASCADE,
     FOREIGN KEY (recipe_id) REFERENCES recipe(id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS shopping_item_audit (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    quantity TEXT,
+    unit TEXT,
+    count INTEGER DEFAULT 1,
+    UNIQUE(name COLLATE NOCASE)
+);
