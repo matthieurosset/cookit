@@ -63,8 +63,16 @@ function adjustQty(delta) {
     const input = document.getElementById('input-qty');
     if (!input) return;
     let val = parseFloat(input.value) || 0;
+    val = Math.max(0, val + delta);
+    input.value = val === 0 ? '' : (Number.isInteger(val) ? val : val.toFixed(1));
+}
+
+function adjustPortions(delta) {
+    const input = document.getElementById('input-portions');
+    if (!input) return;
+    let val = parseInt(input.value) || 1;
     val = Math.max(1, val + delta);
-    input.value = Number.isInteger(val) ? val : val.toFixed(1);
+    input.value = val;
 }
 
 // --- Recipe modal ---

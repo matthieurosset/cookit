@@ -1,15 +1,15 @@
 <div class="ingredients-list" id="ingredients-list">
     <div class="portions-control">
-        <button class="btn btn-sm"
+        <button type="button" class="btn-qty"
                 hx-get="{{ url_for('recipes.scaled_ingredients', recipe_id=recipe_id, portions=portions - 1) }}"
                 hx-target="#ingredients-list"
                 hx-swap="outerHTML"
-                {% if portions <= 1 %}disabled{% endif %}>-</button>
+                {% if portions <= 1 %}disabled{% endif %}>&minus;</button>
         <span class="portions-display">{{ portions }} portion{{ 's' if portions > 1 }}</span>
-        <button class="btn btn-sm"
+        <button type="button" class="btn-qty"
                 hx-get="{{ url_for('recipes.scaled_ingredients', recipe_id=recipe_id, portions=portions + 1) }}"
                 hx-target="#ingredients-list"
-                hx-swap="outerHTML">+</button>
+                hx-swap="outerHTML">&plus;</button>
     </div>
     <ul class="ingredient-checklist">
         {% for ing in ingredients %}
