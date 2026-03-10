@@ -70,6 +70,19 @@ def toggle_item(item_id):
     return '', 204
 
 
+@bp.route('/courses/item/<int:item_id>/quantite', methods=['PATCH'])
+def update_quantity(item_id):
+    from ..db import query as db_query
+    delta = request.form.get('delta', type=float, default=1)
+    item = db_query('SELECT * FROM shopping_item WHERE id = ?', [item_id], one=True)
+    if not item:
+        return '', 404
+    shopping_model.update_quantity(item_id, delta)
+    if request.headers.get('HX-Request'):
+        return _render_items_partial(item['list_id'])
+    return '', 204
+
+
 @bp.route('/courses/item/<int:item_id>/supprimer', methods=['DELETE'])
 def delete_item(item_id):
     from ..db import query

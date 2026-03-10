@@ -1,26 +1,46 @@
+{% macro render_item(item) %}
+<div class="shopping-item {% if item.checked %}checked{% endif %}">
+    <label class="shopping-checkbox"
+           hx-patch="{{ url_for('shopping.toggle_item', item_id=item.id) }}"
+           hx-target="#shopping-items"
+           hx-swap="innerHTML">
+        <input type="checkbox" {% if item.checked %}checked{% endif %}>
+        <span class="checkmark"></span>
+        <span class="item-text">
+            {% if item.quantity %}<strong>{{ item.quantity }}</strong>{% endif %}
+            {% if item.unit %}{{ item.unit }}{% endif %}
+            {{ item.name }}
+        </span>
+    </label>
+    {% if not item.checked %}
+    <span class="qty-controls">
+        <button class="btn btn-icon btn-qty"
+                hx-patch="{{ url_for('shopping.update_quantity', item_id=item.id) }}"
+                hx-vals='{"delta": -1}'
+                hx-target="#shopping-items"
+                hx-swap="innerHTML"
+                title="Moins">&minus;</button>
+        <button class="btn btn-icon btn-qty"
+                hx-patch="{{ url_for('shopping.update_quantity', item_id=item.id) }}"
+                hx-vals='{"delta": 1}'
+                hx-target="#shopping-items"
+                hx-swap="innerHTML"
+                title="Plus">&plus;</button>
+    </span>
+    {% endif %}
+    <button class="btn btn-icon btn-remove"
+            hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
+            hx-target="#shopping-items"
+            hx-swap="innerHTML"
+            title="Supprimer">&times;</button>
+</div>
+{% endmacro %}
+
 {% if free_items %}
 <div class="shopping-group">
     <h3 class="shopping-group-title">Articles libres</h3>
     {% for item in free_items %}
-    <div class="shopping-item {% if item.checked %}checked{% endif %}">
-        <label class="shopping-checkbox"
-               hx-patch="{{ url_for('shopping.toggle_item', item_id=item.id) }}"
-               hx-target="#shopping-items"
-               hx-swap="innerHTML">
-            <input type="checkbox" {% if item.checked %}checked{% endif %}>
-            <span class="checkmark"></span>
-            <span class="item-text">
-                {% if item.quantity %}<strong>{{ item.quantity }}</strong>{% endif %}
-                {% if item.unit %}{{ item.unit }}{% endif %}
-                {{ item.name }}
-            </span>
-        </label>
-        <button class="btn btn-icon btn-remove"
-                hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
-                hx-target="#shopping-items"
-                hx-swap="innerHTML"
-                title="Supprimer">&times;</button>
-    </div>
+    {{ render_item(item) }}
     {% endfor %}
 </div>
 {% endif %}
@@ -29,25 +49,7 @@
 <div class="shopping-group">
     <h3 class="shopping-group-title">{{ group.title }}</h3>
     {% for item in group.entries %}
-    <div class="shopping-item {% if item.checked %}checked{% endif %}">
-        <label class="shopping-checkbox"
-               hx-patch="{{ url_for('shopping.toggle_item', item_id=item.id) }}"
-               hx-target="#shopping-items"
-               hx-swap="innerHTML">
-            <input type="checkbox" {% if item.checked %}checked{% endif %}>
-            <span class="checkmark"></span>
-            <span class="item-text">
-                {% if item.quantity %}<strong>{{ item.quantity }}</strong>{% endif %}
-                {% if item.unit %}{{ item.unit }}{% endif %}
-                {{ item.name }}
-            </span>
-        </label>
-        <button class="btn btn-icon btn-remove"
-                hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
-                hx-target="#shopping-items"
-                hx-swap="innerHTML"
-                title="Supprimer">&times;</button>
-    </div>
+    {{ render_item(item) }}
     {% endfor %}
 </div>
 {% endfor %}

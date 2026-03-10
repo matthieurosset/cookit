@@ -31,15 +31,6 @@ def create():
     return redirect(url_for('tags.index'))
 
 
-@bp.route('/tags/<int:tag_id>/modifier', methods=['POST'])
-def edit(tag_id):
-    name = request.form.get('name', '').strip()
-    if name:
-        tag_model.update(tag_id, name)
-        flash('Tag mis à jour !', 'success')
-    return redirect(url_for('tags.index'))
-
-
 @bp.route('/tags/<int:tag_id>/supprimer', methods=['POST'])
 def delete(tag_id):
     tag_model.delete(tag_id)

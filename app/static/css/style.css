@@ -1047,6 +1047,27 @@ input[type="file"] {
     font-size: 0.8rem;
 }
 
+.qty-controls {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.btn-qty {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--color-border);
+    background: var(--color-warm-white);
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
 .btn-remove {
     opacity: 0;
     transition: opacity var(--transition);
@@ -1165,15 +1186,8 @@ input[type="file"] {
     color: var(--color-text-lighter);
 }
 
-.tag-edit-form {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
+.tag-manage-item .btn-remove {
     margin-left: auto;
-}
-
-.tag-edit-form .input-sm {
-    max-width: 120px;
 }
 
 /* --- Flash Messages --- */
@@ -1304,11 +1318,6 @@ input[type="file"] {
 
     .tag-manage-item {
         flex-wrap: wrap;
-    }
-
-    .tag-edit-form {
-        margin-left: 0;
-        width: 100%;
     }
 
     /* Cook mode mobile */

@@ -52,6 +52,28 @@ def add_recipe_items(list_id, recipe_id, portions=None):
         add_item(list_id, ing.get('name', ''), qty, ing.get('unit', ''), recipe_id)
 
 
+def update_quantity(item_id, delta):
+    """Increment or decrement the quantity of an item."""
+    item = query('SELECT * FROM shopping_item WHERE id = ?', [item_id], one=True)
+    if not item:
+        return None
+    current = item['quantity'] or ''
+    try:
+        val = float(str(current).replace(',', '.')) if current else 0
+        val = val + delta
+        if val < 0:
+            val = 0
+        # Format nicely: integer if whole number
+        if val == int(val):
+            new_qty = str(int(val))
+        else:
+            new_qty = str(round(val, 2))
+        execute('UPDATE shopping_item SET quantity = ? WHERE id = ?', [new_qty, item_id])
+        return new_qty
+    except (ValueError, TypeError):
+        return current
+
+
 def toggle_item(item_id):
     item = query('SELECT * FROM shopping_item WHERE id = ?', [item_id], one=True)
     if item:
