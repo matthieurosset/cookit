@@ -45,7 +45,7 @@
 </div>
 {% endif %}
 
-<button type="button" class="btn btn-secondary btn-sm" onclick="openRecipeModal()">+ Ajouter depuis une recette</button>
+<button type="button" class="btn btn-secondary btn-sm" style="margin-bottom: var(--space-lg)" onclick="openRecipeModal()">+ Ajouter depuis une recette</button>
 
 <div class="modal-overlay" id="recipe-modal" onclick="if(event.target===this)closeRecipeModal()">
     <div class="modal">
@@ -64,7 +64,7 @@
                 <option value="{{ r.id }}">{{ r.title }}</option>
                 {% endfor %}
             </select>
-            <input type="number" name="portions" placeholder="Portions" min="1" class="input-xs">
+            <input type="number" name="portions" placeholder="Portions" min="1" class="input-sm">
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary btn-sm" onclick="closeRecipeModal()">Annuler</button>
                 <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
