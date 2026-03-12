@@ -8,7 +8,7 @@ function addIngredientRow() {
         <input type="text" name="ing_qty" placeholder="Qté" class="input-sm">
         <input type="text" name="ing_unit" placeholder="Unité" class="input-sm">
         <input type="text" name="ing_name" placeholder="Ingrédient" required class="input-grow">
-        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M5.33 4V2.67a1.33 1.33 0 011.34-1.34h2.66a1.33 1.33 0 011.34 1.34V4M13 4v9.33a1.33 1.33 0 01-1.33 1.34H4.33A1.33 1.33 0 013 13.33V4"/></svg></button>
     `;
     container.appendChild(row);
     row.querySelector('[name="ing_name"]').focus();
@@ -21,7 +21,7 @@ function addStepRow() {
     row.innerHTML = `
         <span class="step-row-number"></span>
         <textarea name="step" rows="2" required></textarea>
-        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer">&times;</button>
+        <button type="button" class="btn btn-icon btn-remove-row" onclick="removeRow(this)" title="Supprimer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M5.33 4V2.67a1.33 1.33 0 011.34-1.34h2.66a1.33 1.33 0 011.34 1.34V4M13 4v9.33a1.33 1.33 0 01-1.33 1.34H4.33A1.33 1.33 0 013 13.33V4"/></svg></button>
     `;
     container.appendChild(row);
     row.querySelector('textarea').focus();
@@ -176,8 +176,8 @@ document.addEventListener('keydown', (e) => {
             const btn = e.target.closest('.frequent-btn');
             if (!btn) return;
             nameInput.value = btn.dataset.name;
-            qtyInput.value = btn.dataset.quantity || '1';
-            unitInput.value = btn.dataset.unit;
+            qtyInput.value = '';
+            unitInput.value = '';
             htmx.trigger(form, 'submit');
         });
     });

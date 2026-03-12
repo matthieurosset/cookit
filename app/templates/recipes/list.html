@@ -16,7 +16,7 @@
            hx-get="{{ url_for('recipes.index') }}"
            hx-trigger="input changed delay:300ms, search"
            hx-target="#recipe-cards"
-           hx-include="[name='tag'], [name='favoris']"
+           hx-include="[name='tag']"
            hx-push-url="true"
            class="search-input"
            autocomplete="off">
@@ -30,7 +30,7 @@
                    hx-get="{{ url_for('recipes.index') }}"
                    hx-trigger="change"
                    hx-target="#recipe-cards"
-                   hx-include="[name='q'], [name='favoris']">
+                   hx-include="[name='q']">
             Toutes
         </label>
         {% for tag in tags %}
@@ -40,21 +40,11 @@
                    hx-get="{{ url_for('recipes.index') }}"
                    hx-trigger="change"
                    hx-target="#recipe-cards"
-                   hx-include="[name='q'], [name='favoris']">
+                   hx-include="[name='q']">
             {{ tag.name }}
         </label>
         {% endfor %}
     </div>
-
-    <label class="favorites-toggle">
-        <input type="checkbox" name="favoris" value="1"
-               {% if favorites %}checked{% endif %}
-               hx-get="{{ url_for('recipes.index') }}"
-               hx-trigger="change"
-               hx-target="#recipe-cards"
-               hx-include="[name='q'], [name='tag']">
-        <span class="heart-icon">&#9829;</span> Favoris
-    </label>
 </div>
 
 <div id="recipe-cards">

@@ -5,13 +5,7 @@
 <div class="page-header">
     <h1>Courses</h1>
     <div class="page-actions">
-        <form method="POST" action="{{ url_for('shopping.clear_all') }}"
-              hx-post="{{ url_for('shopping.clear_all') }}"
-              hx-target="#shopping-items"
-              hx-swap="innerHTML"
-              hx-confirm="Vider toute la liste ?">
-            <button type="submit" class="btn btn-danger btn-sm">Tout vider</button>
-        </form>
+        <button type="button" class="btn btn-secondary" onclick="openRecipeModal()">Ajouter depuis une recette</button>
     </div>
 </div>
 
@@ -31,10 +25,9 @@
                autocomplete="off">
         <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
     </div>
-    <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
+    <button type="submit" class="btn btn-primary">Ajouter</button>
 </form>
 
-{% if frequent %}
 <div class="frequent-items" id="frequent-items">
     {% for item in frequent %}
     <button type="button" class="frequent-btn"
@@ -43,9 +36,7 @@
             data-unit="{{ item.unit }}">{{ item.name }}</button>
     {% endfor %}
 </div>
-{% endif %}
 
-<button type="button" class="btn btn-secondary btn-sm" style="margin-bottom: var(--space-lg)" onclick="openRecipeModal()">+ Ajouter depuis une recette</button>
 
 <div class="modal-overlay" id="recipe-modal" onclick="if(event.target===this)closeRecipeModal()">
     <div class="modal">
@@ -71,8 +62,8 @@
                 <span class="portions-label">portion(s)</span>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="closeRecipeModal()">Annuler</button>
-                <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
+                <button type="button" class="btn btn-secondary" onclick="closeRecipeModal()">Annuler</button>
+                <button type="submit" class="btn btn-primary">Ajouter</button>
             </div>
         </form>
     </div>

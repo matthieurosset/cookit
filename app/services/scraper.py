@@ -1,5 +1,7 @@
+import html
 import json
 import re
+import unicodedata
 
 import requests
 from bs4 import BeautifulSoup
@@ -9,9 +11,11 @@ def fetch_recipe(url):
     """Fetch and parse a recipe from a URL using Schema.org/JSON-LD."""
     try:
         resp = requests.get(url, timeout=15, headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; Cookit/1.0)'
+            'User-Agent': 'Mozilla/5.0 (compatible; Cookit/1.0)',
+            'Accept-Charset': 'utf-8',
         })
         resp.raise_for_status()
+        resp.encoding = resp.apparent_encoding or 'utf-8'
     except requests.RequestException:
         return None
 
@@ -22,8 +26,7 @@ def fetch_recipe(url):
         return None
 
     return {
-        'title': recipe_data.get('name', ''),
-        'description': recipe_data.get('description', ''),
+        'title': _clean_text(recipe_data.get('name', '')),
         'ingredients': _parse_ingredients(recipe_data.get('recipeIngredient', [])),
         'steps': _parse_steps(recipe_data.get('recipeInstructions', [])),
         'portions': _parse_yield(recipe_data.get('recipeYield')),
@@ -32,6 +35,18 @@ def fetch_recipe(url):
         'image_url': _parse_image(recipe_data.get('image')),
         'source_url': url,
     }
+
+
+def _clean_text(text):
+    """Clean text: decode HTML entities, normalize unicode, strip whitespace."""
+    if not text:
+        return ''
+    text = str(text)
+    text = html.unescape(text)
+    text = unicodedata.normalize('NFC', text)
+    text = re.sub(r'<[^>]+>', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 
 def _extract_jsonld(soup):
@@ -69,7 +84,7 @@ def _parse_ingredients(ingredients):
     """Parse ingredient strings into structured data."""
     parsed = []
     for text in ingredients:
-        text = str(text).strip()
+        text = _clean_text(text)
         if not text:
             continue
 
@@ -98,24 +113,31 @@ def _parse_steps(instructions):
     steps = []
     if isinstance(instructions, str):
         for line in instructions.split('\n'):
-            line = line.strip()
-            if line:
-                steps.append(line)
+            cleaned = _clean_text(line)
+            if cleaned:
+                steps.append(cleaned)
         return steps
 
     for item in instructions:
         if isinstance(item, str):
-            steps.append(item.strip())
+            cleaned = _clean_text(item)
+            if cleaned:
+                steps.append(cleaned)
         elif isinstance(item, dict):
             text = item.get('text', '')
-            if text:
-                steps.append(text.strip())
+            cleaned = _clean_text(text)
+            if cleaned:
+                steps.append(cleaned)
             elif 'itemListElement' in item:
                 for sub in item['itemListElement']:
                     if isinstance(sub, dict) and sub.get('text'):
-                        steps.append(sub['text'].strip())
+                        cleaned = _clean_text(sub['text'])
+                        if cleaned:
+                            steps.append(cleaned)
                     elif isinstance(sub, str):
-                        steps.append(sub.strip())
+                        cleaned = _clean_text(sub)
+                        if cleaned:
+                            steps.append(cleaned)
     return steps
 
 

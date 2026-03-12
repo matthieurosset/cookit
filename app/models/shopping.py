@@ -128,12 +128,14 @@ def get_suggestions(q):
 
 
 def get_frequent_items(limit=10):
-    """Return the most frequently added items."""
+    """Return the most frequently added items, sorted alphabetically."""
     rows = query(
-        '''SELECT name, quantity, unit, count
-           FROM shopping_item_audit
-           ORDER BY count DESC
-           LIMIT ?''',
+        '''SELECT name, quantity, unit, count FROM (
+               SELECT name, quantity, unit, count
+               FROM shopping_item_audit
+               ORDER BY count DESC
+               LIMIT ?
+           ) ORDER BY name COLLATE NOCASE''',
         [limit]
     )
     return [{'name': r['name'], 'quantity': r['quantity'] or '',

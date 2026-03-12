@@ -6,16 +6,12 @@
         {% else %}
         <div class="card-image-placeholder">&#127860;</div>
         {% endif %}
-        {% if recipe.is_favorite %}
-        <span class="card-fav">&#9829;</span>
-        {% endif %}
     </div>
     <div class="card-body">
         <h3 class="card-title">{{ recipe.title }}</h3>
-        {% if recipe.prep_time or recipe.cook_time %}
-        <div class="card-meta">
-            {% if recipe.prep_time %}<span>{{ recipe.prep_time }} min prep</span>{% endif %}
-            {% if recipe.cook_time %}<span>{{ recipe.cook_time }} min cuisson</span>{% endif %}
+        {% if recipe_tags and recipe_tags.get(recipe.id) %}
+        <div class="card-tags">
+            {% for tag in recipe_tags[recipe.id] %}<span class="card-tag">{{ tag.name }}</span>{% endfor %}
         </div>
         {% endif %}
     </div>

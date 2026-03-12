@@ -16,17 +16,17 @@ bp = Blueprint('recipes', __name__)
 def index():
     search = request.args.get('q', '').strip()
     tag_id = request.args.get('tag', type=int)
-    favorites = request.args.get('favoris') == '1'
 
-    recipes = recipe_model.list_all(search=search, tag_id=tag_id, favorites_only=favorites)
+    recipes = recipe_model.list_all(search=search, tag_id=tag_id)
     tags = tag_model.list_all()
+    recipe_tags = recipe_model.get_all_tags()
 
     # For HTMX requests, return only the cards partial
     if request.headers.get('HX-Request'):
-        return render_template('recipes/partials/cards.html', recipes=recipes)
+        return render_template('recipes/partials/cards.html', recipes=recipes, recipe_tags=recipe_tags)
 
     return render_template('recipes/list.html', recipes=recipes, tags=tags,
-                           search=search, active_tag=tag_id, favorites=favorites)
+                           recipe_tags=recipe_tags, search=search, active_tag=tag_id)
 
 
 @bp.route('/recettes/nouvelle', methods=['GET', 'POST'])
@@ -112,14 +112,6 @@ def delete(recipe_id):
     return redirect(url_for('recipes.index'))
 
 
-@bp.route('/recettes/<int:recipe_id>/favori', methods=['POST'])
-def toggle_favorite(recipe_id):
-    new_val = recipe_model.toggle_favorite(recipe_id)
-    if request.headers.get('HX-Request'):
-        return render_template('recipes/partials/favorite_btn.html',
-                               recipe_id=recipe_id, is_favorite=new_val)
-    return redirect(url_for('recipes.detail', recipe_id=recipe_id))
-
 
 @bp.route('/recettes/<int:recipe_id>/ingredients')
 def scaled_ingredients(recipe_id):
@@ -175,7 +167,6 @@ def _parse_form(req):
 
     return {
         'title': req.form.get('title', '').strip(),
-        'description': req.form.get('description', '').strip(),
         'ingredients': ingredients,
         'steps': steps,
         'portions': req.form.get('portions', 4, type=int),

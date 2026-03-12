@@ -12,20 +12,8 @@ def index():
     items = shopping_model.get_items(lst['id'])
     recipes = recipe_model.list_all()
 
-    grouped = {}
-    free_items = []
-    for item in items:
-        if item['recipe_id']:
-            key = item['recipe_id']
-            if key not in grouped:
-                grouped[key] = {'title': item['recipe_title'] or 'Recette supprimée', 'entries': []}
-            grouped[key]['entries'].append(item)
-        else:
-            free_items.append(item)
-
     frequent = shopping_model.get_frequent_items(10)
-    return render_template('shopping/index.html', list=lst, items=items,
-                           grouped=grouped, free_items=free_items,
+    return render_template('shopping/index.html', list=lst, all_items=items,
                            recipes=recipes, frequent=frequent)
 
 
@@ -123,15 +111,9 @@ def suggestions():
 
 def _render_items_partial(list_id):
     items = shopping_model.get_items(list_id)
-    grouped = {}
-    free_items = []
-    for item in items:
-        if item['recipe_id']:
-            key = item['recipe_id']
-            if key not in grouped:
-                grouped[key] = {'title': item['recipe_title'] or 'Recette supprimée', 'entries': []}
-            grouped[key]['entries'].append(item)
-        else:
-            free_items.append(item)
-    return render_template('shopping/partials/items.html',
-                           grouped=grouped, free_items=free_items)
+    frequent = shopping_model.get_frequent_items(10)
+    items_html = render_template('shopping/partials/items.html',
+                                 all_items=items)
+    frequent_html = render_template('shopping/partials/frequent.html',
+                                    frequent=frequent)
+    return items_html + frequent_html

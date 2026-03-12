@@ -1,0 +1,8 @@
+<div class="frequent-items" id="frequent-items" hx-swap-oob="true">
+    {% for item in frequent %}
+    <button type="button" class="frequent-btn"
+            data-name="{{ item.name }}"
+            data-quantity="{{ item.quantity }}"
+            data-unit="{{ item.unit }}">{{ item.name }}</button>
+    {% endfor %}
+</div>

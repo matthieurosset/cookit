@@ -37,7 +37,6 @@ def import_recipe():
         # Pre-fill the form
         prefill = {
             'title': data['title'],
-            'description': data['description'],
             'ingredients': data['ingredients'],
             'steps': data['steps'],
             'portions': data['portions'],

@@ -16,29 +16,26 @@
             hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
             hx-target="#shopping-items"
             hx-swap="innerHTML"
-            title="Supprimer">&times;</button>
+            title="Supprimer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M5.33 4V2.67a1.33 1.33 0 011.34-1.34h2.66a1.33 1.33 0 011.34 1.34V4M13 4v9.33a1.33 1.33 0 01-1.33 1.34H4.33A1.33 1.33 0 013 13.33V4"/></svg></button>
 </div>
 {% endmacro %}
 
-{% if free_items %}
-<div class="shopping-group">
-    <h3 class="shopping-group-title">Articles libres</h3>
-    {% for item in free_items %}
-    {{ render_item(item) }}
-    {% endfor %}
+{% if all_items %}
+<div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-sm);">
+    <form method="POST" action="{{ url_for('shopping.clear_all') }}"
+          hx-post="{{ url_for('shopping.clear_all') }}"
+          hx-target="#shopping-items"
+          hx-swap="innerHTML"
+          hx-confirm="Vider toute la liste ?">
+        <button type="submit" class="btn btn-danger">Tout vider</button>
+    </form>
 </div>
-{% endif %}
 
-{% for recipe_id, group in grouped.items() %}
-<div class="shopping-group">
-    <h3 class="shopping-group-title">{{ group.title }}</h3>
-    {% for item in group.entries %}
-    {{ render_item(item) }}
-    {% endfor %}
-</div>
+{% for item in all_items %}
+{{ render_item(item) }}
 {% endfor %}
 
-{% if not free_items and not grouped %}
+{% else %}
 <div class="empty-state">
     <p>Liste vide. Ajoutez des articles ci-dessus.</p>
 </div>

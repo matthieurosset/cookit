@@ -10,7 +10,6 @@ def test_index_page(client):
 def test_create_recipe(client):
     resp = client.post('/recettes/nouvelle', data={
         'title': 'Tarte aux pommes',
-        'description': 'Classique francais',
         'portions': '6',
         'prep_time': '20',
         'cook_time': '40',
@@ -26,7 +25,6 @@ def test_create_recipe(client):
 def test_create_and_view_recipe(client):
     client.post('/recettes/nouvelle', data={
         'title': 'Quiche lorraine',
-        'description': '',
         'portions': '4',
         'ing_name': ['lardons', 'oeufs'],
         'ing_qty': ['200', '3'],
@@ -37,18 +35,6 @@ def test_create_and_view_recipe(client):
     assert resp.status_code == 200
     assert b'Quiche lorraine' in resp.data
 
-
-def test_toggle_favorite(client):
-    client.post('/recettes/nouvelle', data={
-        'title': 'Crepes',
-        'portions': '4',
-        'ing_name': ['farine'],
-        'ing_qty': ['250'],
-        'ing_unit': ['g'],
-        'step': ['Mélanger'],
-    })
-    resp = client.post('/recettes/1/favori', follow_redirects=True)
-    assert resp.status_code == 200
 
 
 def test_delete_recipe(client):

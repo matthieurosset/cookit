@@ -7,14 +7,8 @@
         <div class="recipe-header-text">
             <div class="recipe-title-row">
                 <h1>{{ recipe.title }}</h1>
-                {% set recipe_id = recipe.id %}
-                {% set is_favorite = recipe.is_favorite %}
-                {% include "recipes/partials/favorite_btn.html" %}
             </div>
-            {% if recipe.description %}
-            <p class="recipe-description">{{ recipe.description }}</p>
-            {% endif %}
-            <div class="recipe-meta">
+<div class="recipe-meta">
                 {% if recipe.prep_time %}
                 <span class="meta-item">&#9202; Prep: {{ recipe.prep_time }} min</span>
                 {% endif %}
