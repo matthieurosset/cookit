@@ -5,6 +5,14 @@ def list_all():
     return query('SELECT * FROM tag ORDER BY name')
 
 
+def list_all_with_counts():
+    return query(
+        'SELECT t.*, COUNT(rt.recipe_id) as recipe_count '
+        'FROM tag t LEFT JOIN recipe_tag rt ON t.id = rt.tag_id '
+        'GROUP BY t.id ORDER BY t.name'
+    )
+
+
 def get(tag_id):
     return query('SELECT * FROM tag WHERE id = ?', [tag_id], one=True)
 

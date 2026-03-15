@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS shopping_item (
     quantity TEXT,
     unit TEXT,
     checked INTEGER DEFAULT 0,
+    store TEXT DEFAULT NULL,
     FOREIGN KEY (list_id) REFERENCES shopping_list(id) ON DELETE CASCADE,
     FOREIGN KEY (recipe_id) REFERENCES recipe(id) ON DELETE SET NULL
 );

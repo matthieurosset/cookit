@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 
 from ..models import shopping as shopping_model
+from ..models.shopping import STORES, STORE_LABELS
 from ..models import recipe as recipe_model
 
 bp = Blueprint('shopping', __name__)
@@ -13,8 +14,9 @@ def index():
     recipes = recipe_model.list_all()
 
     frequent = shopping_model.get_frequent_items(10)
+    grouped = _group_items(items)
     return render_template('shopping/index.html', list=lst, all_items=items,
-                           recipes=recipes, frequent=frequent)
+                           grouped_items=grouped, recipes=recipes, frequent=frequent)
 
 
 @bp.route('/courses/ajouter', methods=['POST'])
@@ -82,6 +84,20 @@ def delete_item(item_id):
     return '', 204
 
 
+@bp.route('/courses/item/<int:item_id>/magasin/<store>', methods=['PATCH'])
+def set_store(item_id, store):
+    from ..db import query
+    if store not in ('migros', 'coop'):
+        return '', 400
+    item = query('SELECT * FROM shopping_item WHERE id = ?', [item_id], one=True)
+    if not item:
+        return '', 404
+    shopping_model.set_store(item_id, store)
+    if request.headers.get('HX-Request'):
+        return _render_items_partial(item['list_id'])
+    return '', 204
+
+
 @bp.route('/courses/vider-coches', methods=['POST'])
 def clear_checked():
     lst = shopping_model.get_or_create_list()
@@ -109,11 +125,24 @@ def suggestions():
     return jsonify(results)
 
 
+def _group_items(items):
+    """Group items by store, preserving store order."""
+    groups = {}
+    for store_key in STORES:
+        groups[store_key] = []
+    for item in items:
+        key = item['store'] if item['store'] in STORES else None
+        groups[key].append(item)
+    return [{'key': k, 'label': STORE_LABELS[k], 'entries': groups[k]}
+            for k in STORES if groups[k]]
+
+
 def _render_items_partial(list_id):
     items = shopping_model.get_items(list_id)
+    grouped = _group_items(items)
     frequent = shopping_model.get_frequent_items(10)
     items_html = render_template('shopping/partials/items.html',
-                                 all_items=items)
+                                 all_items=items, grouped_items=grouped)
     frequent_html = render_template('shopping/partials/frequent.html',
                                     frequent=frequent)
     return items_html + frequent_html

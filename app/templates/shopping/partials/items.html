@@ -1,9 +1,10 @@
 {% macro render_item(item) %}
-<div class="shopping-item {% if item.checked %}checked{% endif %}">
+<div class="shopping-item {% if item.checked %}checked{% endif %}" id="item-{{ item.id }}">
     <label class="shopping-checkbox"
            hx-patch="{{ url_for('shopping.toggle_item', item_id=item.id) }}"
            hx-target="#shopping-items"
-           hx-swap="innerHTML">
+           hx-swap="innerHTML"
+           hx-on::before-request="this.closest('.shopping-item').classList.add('htmx-request-toggling')">
         <input type="checkbox" {% if item.checked %}checked{% endif %}>
         <span class="checkmark"></span>
         <span class="item-text">
@@ -12,27 +13,49 @@
             {{ item.name }}
         </span>
     </label>
+    <span class="store-pills">
+        <button class="btn-store btn-store-migros{% if item.store != 'migros' %} btn-store-off{% endif %}"
+                hx-patch="{{ url_for('shopping.set_store', item_id=item.id, store='migros') }}"
+                hx-target="#shopping-items"
+                hx-swap="innerHTML"
+                hx-on::before-request="this.classList.toggle('btn-store-off');this.nextElementSibling.classList.add('btn-store-off')"
+                title="Migros">M</button>
+        <button class="btn-store btn-store-coop{% if item.store != 'coop' %} btn-store-off{% endif %}"
+                hx-patch="{{ url_for('shopping.set_store', item_id=item.id, store='coop') }}"
+                hx-target="#shopping-items"
+                hx-swap="innerHTML"
+                hx-on::before-request="this.classList.toggle('btn-store-off');this.previousElementSibling.classList.add('btn-store-off')"
+                title="Coop">C</button>
+    </span>
     <button class="btn btn-icon btn-remove"
             hx-delete="{{ url_for('shopping.delete_item', item_id=item.id) }}"
             hx-target="#shopping-items"
             hx-swap="innerHTML"
+            hx-on::before-request="this.closest('.shopping-item').classList.add('htmx-request-deleting')"
             title="Supprimer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M5.33 4V2.67a1.33 1.33 0 011.34-1.34h2.66a1.33 1.33 0 011.34 1.34V4M13 4v9.33a1.33 1.33 0 01-1.33 1.34H4.33A1.33 1.33 0 013 13.33V4"/></svg></button>
 </div>
 {% endmacro %}
 
 {% if all_items %}
 <div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-sm);">
-    <form method="POST" action="{{ url_for('shopping.clear_all') }}"
-          hx-post="{{ url_for('shopping.clear_all') }}"
+    <form method="POST" action="{{ url_for('shopping.clear_checked') }}"
+          hx-post="{{ url_for('shopping.clear_checked') }}"
           hx-target="#shopping-items"
           hx-swap="innerHTML"
-          hx-confirm="Vider toute la liste ?">
-        <button type="submit" class="btn btn-danger">Tout vider</button>
+          hx-confirm="Vider les éléments cochés ?">
+        <button type="submit" class="btn btn-danger">Vider les éléments cochés</button>
     </form>
 </div>
 
-{% for item in all_items %}
-{{ render_item(item) }}
+{% for group in grouped_items %}
+<div class="shopping-group">
+    {% if group.key and grouped_items|length > 1 %}
+    <div class="shopping-group-title">{{ group.label }}</div>
+    {% endif %}
+    {% for item in group.entries %}
+    {{ render_item(item) }}
+    {% endfor %}
+</div>
 {% endfor %}
 
 {% else %}

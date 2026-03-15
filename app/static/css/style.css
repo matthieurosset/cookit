@@ -1021,9 +1021,9 @@ input[type="file"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-sm) var(--space-md);
+    padding: 2px var(--space-sm);
     border-radius: var(--radius-sm);
-    transition: all var(--transition);
+    transition: background var(--transition);
 }
 
 .shopping-item:hover {
@@ -1096,6 +1096,28 @@ input[type="file"] {
     align-self: stretch;
 }
 
+.qty-unit-display {
+    width: 6ch !important;
+    min-width: 0;
+    max-width: 6ch;
+    text-align: center;
+    border: 1.5px solid var(--color-border) !important;
+    border-radius: var(--radius-sm);
+    background: var(--color-warm-white);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text);
+    padding: 0 2px !important;
+    box-sizing: border-box;
+    align-self: stretch;
+    flex: 0 0 auto;
+}
+
+.qty-unit-display::placeholder {
+    color: var(--color-text-lighter);
+    font-weight: 400;
+}
+
 .btn-qty {
     width: 38px;
     min-height: 38px;
@@ -1115,6 +1137,51 @@ input[type="file"] {
 .portions-label {
     align-self: center;
     margin-left: var(--space-xs);
+}
+
+.store-pills {
+    display: inline-flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.btn-store {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0;
+    line-height: 1;
+    transition: all var(--transition);
+}
+
+.btn-store-migros {
+    background: #FF6600;
+    color: white;
+}
+
+.btn-store-coop {
+    background: #FF6600;
+    color: white;
+}
+
+.btn-store-off {
+    background: var(--color-cream-dark);
+    color: var(--color-text-lighter);
+}
+
+.btn-store-off:hover {
+    opacity: 0.8;
+}
+
+.shopping-item.checked .btn-store {
+    opacity: 0.4;
 }
 
 .btn-remove {
@@ -1348,15 +1415,33 @@ input[type="file"] {
     opacity: 1;
 }
 
-/* Subtle swap transition */
-.htmx-swapping {
-    opacity: 0.7;
-    transition: opacity 0.15s;
+/* Optimistic UI: instant hide on delete */
+.shopping-item.htmx-request-deleting {
+    display: none;
 }
 
-.htmx-settling {
+.shopping-item.htmx-request-toggling .checkmark {
+    background: var(--color-sage);
+    border-color: var(--color-sage);
+}
+
+.shopping-item.htmx-request-toggling .item-text {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.shopping-item.checked.htmx-request-toggling .checkmark {
+    background: var(--color-warm-white);
+    border-color: var(--color-border);
+}
+
+.shopping-item.checked.htmx-request-toggling .item-text {
+    text-decoration: none;
     opacity: 1;
-    transition: opacity 0.15s;
+}
+
+.tag-manage-item.htmx-request-deleting {
+    display: none;
 }
 
 /* --- Responsive --- */
@@ -1420,15 +1505,16 @@ input[type="file"] {
         font-size: 1.1rem;
     }
 
-    /* Shopping - mobile touch targets */
+    /* Shopping - compact but tappable */
     .shopping-item {
-        padding: var(--space-md);
-        min-height: 48px;
+        padding: 2px var(--space-sm);
+        min-height: 44px;
     }
 
-    .shopping-checkbox .checkmark {
-        width: 32px;
-        height: 32px;
+    .btn-store {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
     }
 
     .btn-remove {

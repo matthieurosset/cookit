@@ -7,12 +7,8 @@ bp = Blueprint('tags', __name__)
 
 @bp.route('/tags')
 def index():
-    tags = tag_model.list_all()
-    tags_with_counts = []
-    for tag in tags:
-        count = tag_model.get_recipe_count(tag['id'])
-        tags_with_counts.append({**dict(tag), 'recipe_count': count})
-    return render_template('tags/manage.html', tags=tags_with_counts)
+    tags = tag_model.list_all_with_counts()
+    return render_template('tags/manage.html', tags=tags)
 
 
 @bp.route('/tags/nouveau', methods=['POST'])
@@ -22,12 +18,8 @@ def create():
         tag_model.create(name)
         flash('Tag créé !', 'success')
     if request.headers.get('HX-Request'):
-        tags = tag_model.list_all()
-        tags_with_counts = []
-        for tag in tags:
-            count = tag_model.get_recipe_count(tag['id'])
-            tags_with_counts.append({**dict(tag), 'recipe_count': count})
-        return render_template('tags/partials/tag_list.html', tags=tags_with_counts)
+        tags = tag_model.list_all_with_counts()
+        return render_template('tags/partials/tag_list.html', tags=tags)
     return redirect(url_for('tags.index'))
 
 
@@ -36,10 +28,6 @@ def delete(tag_id):
     tag_model.delete(tag_id)
     flash('Tag supprimé.', 'success')
     if request.headers.get('HX-Request'):
-        tags = tag_model.list_all()
-        tags_with_counts = []
-        for tag in tags:
-            count = tag_model.get_recipe_count(tag['id'])
-            tags_with_counts.append({**dict(tag), 'recipe_count': count})
-        return render_template('tags/partials/tag_list.html', tags=tags_with_counts)
+        tags = tag_model.list_all_with_counts()
+        return render_template('tags/partials/tag_list.html', tags=tags)
     return redirect(url_for('tags.index'))

@@ -59,12 +59,45 @@ function toggleCookMode() {
 document.addEventListener('DOMContentLoaded', updateStepNumbers);
 
 // --- Shopping quantity controls ---
+function syncQtyUnit() {
+    const raw = (document.getElementById('input-qty-unit').value || '').trim();
+    const hiddenQty = document.getElementById('hidden-qty');
+    const hiddenUnit = document.getElementById('hidden-unit');
+    if (!hiddenQty) return;
+    if (!raw) {
+        hiddenQty.value = '';
+        hiddenUnit.value = '';
+        return;
+    }
+    const match = raw.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-Zàéèêëïôùûüçæœ]*)$/);
+    if (match) {
+        hiddenQty.value = match[1].replace(',', '.');
+        hiddenUnit.value = match[2] || '';
+    } else {
+        hiddenQty.value = '';
+        hiddenUnit.value = '';
+    }
+}
+
 function adjustQty(delta) {
-    const input = document.getElementById('input-qty');
+    const input = document.getElementById('input-qty-unit');
     if (!input) return;
-    let val = parseFloat(input.value) || 0;
-    val = Math.max(0, val + delta);
-    input.value = val === 0 ? '' : (Number.isInteger(val) ? val : val.toFixed(1));
+    const raw = (input.value || '').trim();
+    const match = raw.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-Zàéèêëïôùûüçæœ]*)$/);
+    let num = 0;
+    let unit = '';
+    if (match) {
+        num = parseFloat(match[1].replace(',', '.')) || 0;
+        unit = match[2] || '';
+    }
+    num = Math.max(0, num + delta);
+    if (num === 0) {
+        input.value = '';
+    } else {
+        const numStr = Number.isInteger(num) ? num : num.toFixed(1);
+        input.value = unit ? numStr + ' ' + unit : '' + numStr;
+    }
+    syncQtyUnit();
 }
 
 function adjustPortions(delta) {
@@ -102,8 +135,7 @@ document.addEventListener('keydown', (e) => {
         if (!nameInput) return;
 
         const dropdown = document.getElementById('autocomplete-dropdown');
-        const qtyInput = document.getElementById('input-qty');
-        const unitInput = document.getElementById('input-unit');
+        const qtyUnitInput = document.getElementById('input-qty-unit');
         const form = document.getElementById('add-item-form');
 
         // Autocomplete on typing
@@ -143,7 +175,7 @@ document.addEventListener('keydown', (e) => {
             const item = e.target.closest('.autocomplete-item');
             if (!item) return;
             e.preventDefault();
-            selectSuggestion(item, nameInput, qtyInput, unitInput, dropdown);
+            selectSuggestion(item, nameInput, qtyUnitInput, dropdown);
         });
 
         // Keyboard navigation
@@ -160,7 +192,7 @@ document.addEventListener('keydown', (e) => {
                 updateActive(items);
             } else if (e.key === 'Enter' && activeIndex >= 0) {
                 e.preventDefault();
-                selectSuggestion(items[activeIndex], nameInput, qtyInput, unitInput, dropdown);
+                selectSuggestion(items[activeIndex], nameInput, qtyUnitInput, dropdown);
             } else if (e.key === 'Escape') {
                 dropdown.classList.remove('show');
             }
@@ -176,16 +208,20 @@ document.addEventListener('keydown', (e) => {
             const btn = e.target.closest('.frequent-btn');
             if (!btn) return;
             nameInput.value = btn.dataset.name;
-            qtyInput.value = '';
-            unitInput.value = '';
+            const q = btn.dataset.quantity || '';
+            const u = btn.dataset.unit || '';
+            qtyUnitInput.value = q ? q + u : '';
+            syncQtyUnit();
             htmx.trigger(form, 'submit');
         });
     });
 
-    function selectSuggestion(item, nameInput, qtyInput, unitInput, dropdown) {
+    function selectSuggestion(item, nameInput, qtyUnitInput, dropdown) {
         nameInput.value = item.dataset.name;
-        if (item.dataset.quantity) qtyInput.value = item.dataset.quantity;
-        if (item.dataset.unit) unitInput.value = item.dataset.unit;
+        const q = item.dataset.quantity || '';
+        const u = item.dataset.unit || '';
+        qtyUnitInput.value = q ? q + u : '';
+        syncQtyUnit();
         dropdown.classList.remove('show');
         nameInput.focus();
     }

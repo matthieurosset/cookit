@@ -2,6 +2,9 @@ import json
 
 from ..db import query, execute
 
+STORES = [None, 'migros', 'coop']
+STORE_LABELS = {None: 'Sans distinction', 'migros': 'Migros', 'coop': 'Coop'}
+
 
 def get_or_create_list():
     """Get the single shopping list, creating it if needed."""
@@ -18,7 +21,8 @@ def get_items(list_id):
            FROM shopping_item si
            LEFT JOIN recipe r ON si.recipe_id = r.id
            WHERE si.list_id = ?
-           ORDER BY si.checked, si.recipe_id NULLS FIRST, si.id''',
+           ORDER BY CASE WHEN si.store IS NULL THEN 0 WHEN si.store = 'migros' THEN 1 WHEN si.store = 'coop' THEN 2 END,
+                    si.checked, si.name COLLATE NOCASE''',
         [list_id]
     )
 
@@ -87,6 +91,16 @@ def update_quantity(item_id, delta):
         return new_qty
     except (ValueError, TypeError):
         return current
+
+
+def set_store(item_id, store):
+    """Set store for an item. If already set to this store, clear it."""
+    item = query('SELECT * FROM shopping_item WHERE id = ?', [item_id], one=True)
+    if not item:
+        return None
+    new_store = None if item['store'] == store else store
+    execute('UPDATE shopping_item SET store = ? WHERE id = ?', [new_store, item_id])
+    return new_store
 
 
 def toggle_item(item_id):

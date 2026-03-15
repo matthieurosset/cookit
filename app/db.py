@@ -39,4 +39,10 @@ def init_db(app):
         schema_path = os.path.join(os.path.dirname(__file__), 'schema.sql')
         with open(schema_path) as f:
             db.executescript(f.read())
+        # Migrations for existing databases
+        try:
+            db.execute('ALTER TABLE shopping_item ADD COLUMN store TEXT DEFAULT NULL')
+            db.commit()
+        except Exception:
+            pass
         close_db()
