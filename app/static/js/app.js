@@ -108,21 +108,19 @@ function adjustPortions(delta) {
     input.value = val;
 }
 
-// --- Recipe modal ---
-function openRecipeModal() {
-    document.getElementById('recipe-modal').classList.add('open');
+// --- Shopping modal (from recipe detail) ---
+function openShoppingModal() {
+    document.getElementById('shopping-modal').classList.add('open');
 }
 
-function closeRecipeModal() {
-    const modal = document.getElementById('recipe-modal');
+function closeShoppingModal() {
+    const modal = document.getElementById('shopping-modal');
     if (!modal) return;
     modal.classList.remove('open');
-    const form = modal.querySelector('form');
-    if (form) form.reset();
 }
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeRecipeModal();
+    if (e.key === 'Escape') closeShoppingModal();
 });
 
 // --- Shopping autocomplete & frequent items ---
@@ -201,18 +199,6 @@ document.addEventListener('keydown', (e) => {
         // Close on blur
         nameInput.addEventListener('blur', () => {
             setTimeout(() => dropdown.classList.remove('show'), 150);
-        });
-
-        // Frequent item buttons
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.frequent-btn');
-            if (!btn) return;
-            nameInput.value = btn.dataset.name;
-            const q = btn.dataset.quantity || '';
-            const u = btn.dataset.unit || '';
-            qtyUnitInput.value = q ? q + u : '';
-            syncQtyUnit();
-            htmx.trigger(form, 'submit');
         });
     });
 

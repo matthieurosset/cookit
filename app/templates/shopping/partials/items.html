@@ -37,16 +37,6 @@
 {% endmacro %}
 
 {% if all_items %}
-<div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-sm);">
-    <form method="POST" action="{{ url_for('shopping.clear_checked') }}"
-          hx-post="{{ url_for('shopping.clear_checked') }}"
-          hx-target="#shopping-items"
-          hx-swap="innerHTML"
-          hx-confirm="Vider les éléments cochés ?">
-        <button type="submit" class="btn btn-danger">Vider les éléments cochés</button>
-    </form>
-</div>
-
 {% for group in grouped_items %}
 <div class="shopping-group">
     {% if group.key and grouped_items|length > 1 %}
@@ -57,6 +47,16 @@
     {% endfor %}
 </div>
 {% endfor %}
+
+<div style="display: flex; justify-content: flex-end; margin-top: var(--space-md);">
+    <form method="POST" action="{{ url_for('shopping.clear_checked') }}"
+          hx-post="{{ url_for('shopping.clear_checked') }}"
+          hx-target="#shopping-items"
+          hx-swap="innerHTML"
+          hx-confirm="Vider les éléments cochés ?">
+        <button type="submit" class="btn btn-danger btn-sm">Vider les éléments cochés</button>
+    </form>
+</div>
 
 {% else %}
 <div class="empty-state">

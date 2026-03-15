@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
 
 from ..models import shopping as shopping_model
 from ..models.shopping import STORES, STORE_LABELS
@@ -11,12 +11,9 @@ bp = Blueprint('shopping', __name__)
 def index():
     lst = shopping_model.get_or_create_list()
     items = shopping_model.get_items(lst['id'])
-    recipes = recipe_model.list_all()
-
-    frequent = shopping_model.get_frequent_items(10)
     grouped = _group_items(items)
     return render_template('shopping/index.html', list=lst, all_items=items,
-                           grouped_items=grouped, recipes=recipes, frequent=frequent)
+                           grouped_items=grouped)
 
 
 @bp.route('/courses/ajouter', methods=['POST'])
@@ -42,9 +39,11 @@ def add_recipe():
 
     if recipe_id:
         shopping_model.add_recipe_items(lst['id'], recipe_id, portions)
+        flash('Ingrédients ajoutés aux courses', 'success')
 
-    if request.headers.get('HX-Request'):
-        return _render_items_partial(lst['id'])
+    referrer = request.referrer
+    if referrer and '/recettes/' in referrer:
+        return redirect(referrer)
     return redirect(url_for('shopping.index'))
 
 
@@ -140,9 +139,5 @@ def _group_items(items):
 def _render_items_partial(list_id):
     items = shopping_model.get_items(list_id)
     grouped = _group_items(items)
-    frequent = shopping_model.get_frequent_items(10)
-    items_html = render_template('shopping/partials/items.html',
-                                 all_items=items, grouped_items=grouped)
-    frequent_html = render_template('shopping/partials/frequent.html',
-                                    frequent=frequent)
-    return items_html + frequent_html
+    return render_template('shopping/partials/items.html',
+                           all_items=items, grouped_items=grouped)

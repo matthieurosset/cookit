@@ -64,11 +64,34 @@
     {% endif %}
 
     <div class="recipe-actions">
+        <button type="button" class="btn btn-primary" onclick="openShoppingModal()">Ajouter aux courses</button>
         <a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}" class="btn btn-secondary">Modifier</a>
         <form method="POST" action="{{ url_for('recipes.delete', recipe_id=recipe.id) }}"
               onsubmit="return confirm('Supprimer cette recette ?')">
             <button type="submit" class="btn btn-danger">Supprimer</button>
         </form>
+    </div>
+
+    <div class="modal-overlay" id="shopping-modal" onclick="if(event.target===this)closeShoppingModal()">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Ajouter aux courses</h3>
+                <button type="button" class="btn btn-icon" onclick="closeShoppingModal()">&times;</button>
+            </div>
+            <form class="modal-body" method="POST" action="{{ url_for('shopping.add_recipe') }}">
+                <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+                <div class="qty-input-controls" style="align-self: flex-start">
+                    <button type="button" class="btn-qty" onclick="adjustPortions(-1)">&minus;</button>
+                    <input type="text" name="portions" id="input-portions" value="{{ portions or 1 }}" class="qty-display" size="1" readonly>
+                    <button type="button" class="btn-qty" onclick="adjustPortions(1)">&plus;</button>
+                    <span class="portions-label">portion(s)</span>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeShoppingModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <button class="btn btn-cook-mode" onclick="toggleCookMode()">
